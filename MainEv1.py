@@ -108,7 +108,7 @@ def consultas():
                         for key,value in regisitems:
                             if value[0]==tituloMayus:
                                 found=True
-                                print(registro_libro[key])
+                                print("Folio: ",key,"\nTitulo: ",registro_libro[key][0],"\nAutor: ",registro_libro[key][1],"\nGenero: ",registro_libro[key][2],"\nAño de Publicación: ",registro_libro[key][3],"\nFecha_Adquisicion: ",registro_libro[key][4],"\nISBN: ",registro_libro[key][5])
                         if found==False:
                             print("No se encontraron libros con el titulo ", tituloMayus)
                             
@@ -119,7 +119,7 @@ def consultas():
                         for key,value in regisitems:
                             if value[5]==isbn:
                                 found=True
-                                print(registro_libro[key])
+                                print("Folio: ",key,"\nTitulo: ",registro_libro[key][0],"\nAutor: ",registro_libro[key][1],"\nGenero: ",registro_libro[key][2],"\nAño de Publicación: ",registro_libro[key][3],"\nFecha_Adquisicion: ",registro_libro[key][4],"\nISBN: ",registro_libro[key][5])
                         if found==False:
                             print("No se encontraron titulos con el ISBN ",isbn)
                     else:
@@ -140,7 +140,7 @@ def consultas():
 
                     elif reportajes=="2":
                         foundautor=False
-                        autorsel = input("Favor de introducir el autor")
+                        autorsel = input("Favor de introducir el autor: ")
                         mayusautorsel=autorsel.upper()
                         listareport=list(registro_libro.items())
                         print(f"Folio \t Titulo \t\t Autor \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
@@ -154,7 +154,7 @@ def consultas():
                         print("*"*100)
                     elif reportajes=="3":
                         foundgen=False
-                        generosel = input("Favor de introducir el genero")
+                        generosel = input("Favor de introducir el genero:   ")
                         mayusgenerosel=generosel.upper()
                         listareport=list(registro_libro.items())
                         print(f"Folio \t Titulo \t\t Autor \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
@@ -169,7 +169,7 @@ def consultas():
 
                     elif reportajes=="4":
                         foundyear=False
-                        añosel = input("Favor de introducir el año")
+                        añosel = input("Favor de introducir el año: ")
                         mayusañosel=añosel.upper()
                         listareport=list(registro_libro.items())
                         print(f"Folio \t Titulo \t\t Autor \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
