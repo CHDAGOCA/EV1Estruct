@@ -1,4 +1,6 @@
 import datetime
+import re
+import csv
 registro_libro={}
 def registro():
     print("-" * 40)
@@ -29,6 +31,7 @@ def registro():
 
                     while True:
                         publicacion=input(f"Ingrese el año de publicación del libro {titulo}  ")
+                        if
                         fecha_procesada = datetime.datetime.strptime(publicacion, "%Y").date() 
                         fecha_actual = datetime.date.today()
                         if fecha_procesada > fecha_actual:
@@ -46,7 +49,7 @@ def registro():
 
                     while True:
                         isbn=input(str(f"Ingresa la clave de ISBN del libro "))
-                        if len(isbn) == 13:
+                        if len(isbn) == 13 and (bool(re.match("^[0-9]{13}$", isbn))):
                             break
                         else:
                             print("El ISBN debe tener 13 caracteres numericos, vuelva a ingresarlos ")
@@ -91,16 +94,16 @@ def registro():
 def consultas():
         while True:
             sub_menu=input("Consultas y Reportajes\n ¿Que accion deseas realizar? \n[1] Consulta por titulo \n[2] Reportajes \n[3] Volver al menú Principal \n")
-            sub_menu = int(sub_menu)
-            if sub_menu == 3:
+            sub_menu = sub_menu
+            if sub_menu == "3":
                 break
-            if sub_menu == 1:
+            if sub_menu == "1":
                 while True:
                     consulta_titulo=input("Consulta de Titulo \n ¿Que accion deseas realizar? \n[1] Por titulo \n[2] Por ISBN \n[3] Volver al menú de consultas y reportajes \n")
-                    consulta_titulo = int(consulta_titulo)
-                    if consulta_titulo == 3:
+                    consulta_titulo = consulta_titulo
+                    if consulta_titulo == "3":
                         break
-                    elif consulta_titulo == 1:
+                    elif consulta_titulo == "1":
                         found=False
                         titulo= input("Ingresa el titulo del libro a buscar: ")
                         regisitems=(list(registro_libro.items()))
@@ -112,7 +115,7 @@ def consultas():
                         if found==False:
                             print("No se encontraron libros con el titulo ", tituloMayus)
                             
-                    elif consulta_titulo == 2:
+                    elif consulta_titulo == "2":
                         found=False
                         isbn= input("Ingresa el isbn del libro a buscar: ")
                         regisitems=(list(registro_libro.items()))
@@ -124,7 +127,7 @@ def consultas():
                             print("No se encontraron titulos con el ISBN ",isbn)
                     else:
                         print("La opcion ingresada no es correcta, elija de nuevo") 
-            if sub_menu == 2:
+            if sub_menu == "2":
                 while True:
                     reportajes = input("Reportajes \n ¿Que accion deseas realizar? \n[1] Catalogo Completo \n[2] Reportaje por autor \n[3] Reportaje por genero \n[4] Por año de publicacion \n [5] volver al menu de reportaje \n")
                     if reportajes=="1":
@@ -136,55 +139,66 @@ def consultas():
                                 print(f'{Clave:4} \t  {valor[0]:15} \t {valor[1]:15} \t {valor[2]:10} \t {valor[3]:5} \t\t {valor[4]:5} \t {valor[5]:15} ')
                             print("*"*100)
                         else:
-                            print("No se han registrado libros")
+                            print("No se han registrado libros.")
 
                     elif reportajes=="2":
                         foundautor=False
                         autorsel = input("Favor de introducir el autor: ")
                         mayusautorsel=autorsel.upper()
                         listareport=list(registro_libro.items())
-                        print(f"Folio \t Titulo \t\t Autor \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
-                        print("*"*100)
-                        for key,value in regisitems:
-                            if value[1]==mayusautorsel:
-                                foundautor=True
-                                print(f'{key:4} \t  {value[0]:15} \t {value[1]:15} \t {value[2]:10} \t {value[3]:5} \t\t {value[4]:5} \t {value[5]:15}')
-                        if foundautor==False:
-                            print("No hay libros registrados de este autor")
-                        print("*"*100)
+                        if listareport:
+                            print(f"Folio \t Titulo \t\t Autor \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
+                            print("*"*100)
+                            for key,value in regisitems:
+                                if value[1]==mayusautorsel:
+                                    foundautor=True
+                                    print(f'{key:4} \t  {value[0]:15} \t {value[1]:15} \t {value[2]:10} \t {value[3]:5} \t\t {value[4]:5} \t {value[5]:15}')
+                            if foundautor==False:
+                                print("No hay libros registrados de este autor")
+                            print("*"*100)
+                        else:
+                            print("No se han registrado libros por lo que no hay libros de este autor.")
                     elif reportajes=="3":
                         foundgen=False
                         generosel = input("Favor de introducir el genero:   ")
                         mayusgenerosel=generosel.upper()
                         listareport=list(registro_libro.items())
-                        print(f"Folio \t Titulo \t\t Autor \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
-                        print("*"*100)
-                        for key,value in regisitems:
-                            if value[2]==mayusgenerosel:
-                                foundgen=True
-                                print(f'{key:4} \t  {value[0]:15} \t {value[1]:15} \t {value[2]:10} \t {value[3]:5} \t\t {value[4]:5} \t {value[5]:15}')
-                        if foundgen==False:
-                            print("No hay libros registrados de este genero")
-                        print("*"*100)
+                        if listareport:
+                            print(f"Folio \t Titulo \t\t Autor \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
+                            print("*"*100)
+                            for key,value in regisitems:
+                                if value[2]==mayusgenerosel:
+                                    foundgen=True
+                                    print(f'{key:4} \t  {value[0]:15} \t {value[1]:15} \t {value[2]:10} \t {value[3]:5} \t\t {value[4]:5} \t {value[5]:15}')
+                            if foundgen==False:
+                                print("No hay libros registrados de este genero")
+                            print("*"*100)
+                        else:
+                            print("No se han registrado libros por lo que no hay libros de este genero.")
 
                     elif reportajes=="4":
                         foundyear=False
                         añosel = input("Favor de introducir el año: ")
                         mayusañosel=añosel.upper()
                         listareport=list(registro_libro.items())
-                        print(f"Folio \t Titulo \t\t Autor \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
-                        print("*"*100)
-                        for key,value in regisitems:
-                            if value[3]==mayusañosel:
-                                foundyear=True
-                                print(f'{key:4} \t  {value[0]:15} \t {value[1]:15} \t {value[2]:10} \t {value[3]:5} \t\t {value[4]:5} \t {value[5]:15}')
-                        if foundyear==False:
-                            print("No hay libros registrados de este año de publicación")
+                        if listareport:
+                            print(f"Folio \t Titulo \t\t Autor \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
+                            print("*"*100)
+                            for key,value in regisitems:
+                                if value[3]==mayusañosel:
+                                    foundyear=True
+                                    print(f'{key:4} \t  {value[0]:15} \t {value[1]:15} \t {value[2]:10} \t {value[3]:5} \t\t {value[4]:5} \t {value[5]:15}')
+                            if foundyear==False:
+                                print("No hay libros registrados de este año de publicación")
 
-                        print("*"*100)
+                            print("*"*100)
+                        else:
+                            print("No se han registrado libros por lo que no hay libros con este año de publicación.")
 
                     elif reportajes=="5":
                         break
+                    else:
+                        print("Favor de ingresar una respuesta aceptable.")
 
             else:
                 print("La opcion ingresada no es correcta, elija de nuevo")
