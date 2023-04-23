@@ -1,7 +1,7 @@
 import datetime
 import re
 import csv
-registro_libro={}
+start=False
 def registro():
     print("-" * 40)
     print("Registro de libro")
@@ -18,7 +18,10 @@ def registro():
                     while True:
                         autor=input(f"Ingrese el autor de {titulo} ")
                         if autor.strip() == '':
-                            print("El Autor del libro es un campo obligatorio")
+                            print("El a1utor del libro es un campo obligatorio")
+                        elif (not bool(re.match("^[A-Za-z ÑÁÉÍÓÚÜ]{1,100}$",autor))):
+                            print("\nEl nombre del autor solo puede contener 100 caracteres como máximo entre letras y espacios.")
+                            continue
                         else: 
                             break
 
@@ -26,22 +29,31 @@ def registro():
                         genero=input(f"Ingrese el genero al que pertenece ")
                         if genero.strip() == '':
                             print("El Genero del libro es un campo obligatorio")
+                        elif (not bool(re.match("^[A-Za-z ÑÁÉÍÓÚÜ]{1,100}$",genero))):
+                            print("\nEl genero solo puede contener 100 caracteres como máximo con solo letras y espacios.")
+                            continue
                         else: 
                             break
 
                     while True:
-                        publicacion=input(f"Ingrese el año de publicación del libro {titulo}  ")
-                        if
+                        publicacion=input(f"Ingrese el año de publicación del libro (YYYY) {titulo}  ")
+                        if (not bool(re.match("^[0-9]{4}$", publicacion))):
+                            print("\nEl año de publicación del libro solo pueden ser 4 caracteres númericos.")
+                            continue
                         fecha_procesada = datetime.datetime.strptime(publicacion, "%Y").date() 
                         fecha_actual = datetime.date.today()
+                        print(fecha_procesada)
                         if fecha_procesada > fecha_actual:
                             print("Esta fecha no es valida")
                         else:
                             break
 
                     while True:
-                        fecha_adquisicion=input("Ingrese la fecha en la que se adquirio el libro (dd/mm/aaaa) ")
-                        fecha2_procesada= datetime.datetime.strptime(fecha_adquisicion, "%d/%m/%Y").date() 
+                        fecha_adquisicion=input("Ingrese la fecha en la que se adquirio el libro (aaaa/mm/dd) ")
+                        if (not bool(re.match("^([0-9]{4}[/]?((0[13-9]|1[012])[/]?(0[1-9]|[12][0-9]|30)|(0[13578]|1[02])[/]?31|02[/]?(0[1-9]|1[0-9]|2[0-8]))|([0-9]{2}(([2468][048]|[02468][48])|[13579][26])|([13579][26]|[02468][048])00)[/]?02[/]?29)$",fecha_adquisicion))):
+                            print("\nLa fecha sigue los formatos aaaa/mm/dd y solo acepta dias posibles.")
+                            continue
+                        fecha2_procesada= datetime.datetime.strptime(fecha_adquisicion, "%Y/%m/%d").date() 
                         if fecha2_procesada < fecha_procesada :
                             print("La fecha de adquisicion debe ser despues de la fecha de publicacion, ingrese una fecha valida ")
                         else:
@@ -72,23 +84,35 @@ def registro():
                                 print(f"Se registro el libro\n", registro_libro[identificador])
                                 print("*" * 40)
                                 break
-                            else: 
+                            elif confirmacion=="NO": 
                                 DatosCorrect=False
                                 print("Vuelva a ingresar los datos")
                                 if identificador in registro_libro:
                                     titulo, autor, genero, publicacion, fecha_adquisicion, isbn= registro_libro[identificador]
                                     del registro_libro[identificador]
                                 break
+                            else:
+                                print("Introduce una de las opciones (Si/NO)")
                     if DatosCorrect==False:
                         continue   
 
                     break
-            nuevo_registro=input("¿Deseas realizar un nuevo registro? (SI/NO)").upper()
-            if nuevo_registro=="SI":
-                continue 
-            if nuevo_registro=="NO":
-                print("*" * 40)
-                print("Sus registros han quedado guardados")
+            seleccion=False
+            while True:
+                nuevo_registro=input("¿Deseas realizar un nuevo registro? (SI/NO)").upper()
+                if nuevo_registro=="SI":
+                    seleccion=True
+                    break 
+                elif nuevo_registro=="NO":
+                    print("*" * 40)
+                    print("Sus registros han quedado guardados")
+                    break
+                else:
+                    print("Favor de seleccionar una opcion valida.")
+                    continue
+            if seleccion==True:
+                continue
+            else:
                 break
 
 def consultas():
@@ -129,7 +153,7 @@ def consultas():
                         print("La opcion ingresada no es correcta, elija de nuevo") 
             if sub_menu == "2":
                 while True:
-                    reportajes = input("Reportajes \n ¿Que accion deseas realizar? \n[1] Catalogo Completo \n[2] Reportaje por autor \n[3] Reportaje por genero \n[4] Por año de publicacion \n [5] volver al menu de reportaje \n")
+                    reportajes = input("Reportajes \n ¿Que accion deseas realizar? \n[1] Catalogo Completo \n[2] Reportaje por autor \n[3] Reportaje por genero \n[4] Por año de publicacion \n[5] volver al menu de reportaje \n")
                     if reportajes=="1":
                         listareport=list(registro_libro.items())
                         if listareport:
@@ -149,7 +173,7 @@ def consultas():
                         if listareport:
                             print(f"Folio \t Titulo \t\t Autor \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
                             print("*"*100)
-                            for key,value in regisitems:
+                            for key,value in listareport:
                                 if value[1]==mayusautorsel:
                                     foundautor=True
                                     print(f'{key:4} \t  {value[0]:15} \t {value[1]:15} \t {value[2]:10} \t {value[3]:5} \t\t {value[4]:5} \t {value[5]:15}')
@@ -166,7 +190,7 @@ def consultas():
                         if listareport:
                             print(f"Folio \t Titulo \t\t Autor \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
                             print("*"*100)
-                            for key,value in regisitems:
+                            for key,value in listareport:
                                 if value[2]==mayusgenerosel:
                                     foundgen=True
                                     print(f'{key:4} \t  {value[0]:15} \t {value[1]:15} \t {value[2]:10} \t {value[3]:5} \t\t {value[4]:5} \t {value[5]:15}')
@@ -184,7 +208,7 @@ def consultas():
                         if listareport:
                             print(f"Folio \t Titulo \t\t Autor \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
                             print("*"*100)
-                            for key,value in regisitems:
+                            for key,value in listareport:
                                 if value[3]==mayusañosel:
                                     foundyear=True
                                     print(f'{key:4} \t  {value[0]:15} \t {value[1]:15} \t {value[2]:10} \t {value[3]:5} \t\t {value[4]:5} \t {value[5]:15}')
@@ -202,8 +226,42 @@ def consultas():
 
             else:
                 print("La opcion ingresada no es correcta, elija de nuevo")
+
+def GuardarArchivo():
+    listareport=list(registro_libro.items())
+    archivo = open("Registro.csv","w",newline="")
+    grabador=csv.writer(archivo)
+    grabador.writerow(("Clave","Titulo","Autor","Genero","f_publicacion","fecha_adquisicion","isbn"))
+    grabador.writerows([(clave,datos[0],datos[1],datos[2],datos[3],datos[4],datos[5]) for clave,datos in listareport])
+    archivo.close
+
+def CargarDatos():
+    try:
+        registro_libro=dict()
+        with open("Registro.csv","r",newline="") as archivo:
+            lector=csv.reader(archivo)
+            next(lector)
+
+            for clave, titulo,autor,genero,f_publicacion,fecha_adq,isbn in lector:
+                registro_libro[int(clave)]=(titulo,autor,genero,f_publicacion,fecha_adq,isbn)
+        return registro_libro
+    except FileNotFoundError:
+        print("No hay registros previos en la bilbioteca")
+        registro_libro=dict()
+        return registro_libro
+    except csv.Error as fallocsv:
+        print("Ocurrió un error inesperado y no se cargaron los registros")
+        registro_libro=dict()
+        return registro_libro
+    except Exception:
+        print("Deido a un error no se han podido cargar los registros.")
+        registro_libro=dict()
+        return registro_libro
             
 while True:
+    if start==False:
+        registro_libro=CargarDatos()
+        start=True
     menu_principal=input("Bienvenido a la biblioteca universitaria\n ¿Que accion deseas realizar? \n[1]Registrar un nuevo ejemplar \n[2]Consultas y reportes \n[3]Salir \n")
     if menu_principal== "1":
       registro()
@@ -211,6 +269,8 @@ while True:
       consultas()
     elif menu_principal=="3":
       print("Gracias por visitarnos, vuelva pronto")
+      if registro_libro:
+        GuardarArchivo()
       break
     else:
         print("La opcion ingresada no es correcta, elija de nuevo")
