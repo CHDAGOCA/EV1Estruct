@@ -17,11 +17,11 @@ def registro():
                             break
                     
                     while True:
-                        genero=input(f"Ingrese el genero de {titulo} ")
-                        if genero.strip() == '':
+                        autor=input(f"Ingrese el Autor de {titulo} ")
+                        if autor.strip() == '':
                             print("El a1utor del libro es un campo obligatorio")
-                        elif (not bool(re.match("^[A-Za-z ÑÁÉÍÓÚÜ]{1,100}$",genero))):
-                            print("\nEl nombre del genero solo puede contener 100 caracteres como máximo entre letras y espacios.")
+                        elif (not bool(re.match("^[A-Za-z ÑÁÉÍÓÚÜ]{1,100}$",autor))):
+                            print("\nEl nombre del Autor solo puede contener 100 caracteres como máximo entre letras y espacios.")
                             continue
                         else: 
                             break
@@ -72,11 +72,11 @@ def registro():
                     else:
                         identificador = 1 
 
-                    registro_libro[identificador] = [titulo.upper(), genero.upper(), genero.upper(), publicacion, fecha_adquisicion, isbn]
+                    registro_libro[identificador] = [titulo.upper(), autor.upper(), genero.upper(), publicacion, fecha_adquisicion, isbn]
                     while True:
                             DatosCorrect=True
                             print("*" * 40)
-                            print(f"Titulo: {titulo} \ngenero: {genero} \nGenero: {genero} \nFecha de publicacion: {publicacion} \nFecha de adquisición: {fecha_adquisicion} \nISBN: {isbn} \n") 
+                            print(f"Titulo: {titulo} \nAutor: {autor} \nGenero: {genero} \nFecha de publicacion: {publicacion} \nFecha de adquisición: {fecha_adquisicion} \nISBN: {isbn} \n") 
                             print("*" * 40)
                             confirmacion=input("¿Son correctos los datos ingresados? (SI/NO)").upper()
                             print("*" * 40)
@@ -89,7 +89,7 @@ def registro():
                                 DatosCorrect=False
                                 print("Vuelva a ingresar los datos")
                                 if identificador in registro_libro:
-                                    titulo, genero, genero, publicacion, fecha_adquisicion, isbn= registro_libro[identificador]
+                                    titulo, autor, genero, publicacion, fecha_adquisicion, isbn= registro_libro[identificador]
                                     del registro_libro[identificador]
                                 break
                             else:
@@ -313,7 +313,7 @@ def GuardarArchivo():
     listareport=list(registro_libro.items())
     archivo = open("Registro.csv","w",newline="")
     grabador=csv.writer(archivo)
-    grabador.writerow(("Clave","Titulo","genero","Genero","f_publicacion","fecha_adquisicion","isbn"))
+    grabador.writerow(("Clave","Titulo","Autor","Genero","f_publicacion","fecha_adquisicion","isbn"))
     grabador.writerows([(clave,datos[0],datos[1],datos[2],datos[3],datos[4],datos[5]) for clave,datos in listareport])
     archivo.close
 
@@ -324,8 +324,8 @@ def CargarDatos():
             lector=csv.reader(archivo)
             next(lector)
 
-            for clave, titulo,genero,genero,f_publicacion,fecha_adq,isbn in lector:
-                registro_libro[int(clave)]=(titulo,genero,genero,f_publicacion,fecha_adq,isbn)
+            for clave, titulo,autor,genero,f_publicacion,fecha_adq,isbn in lector:
+                registro_libro[int(clave)]=(titulo,autor,genero,f_publicacion,fecha_adq,isbn)
         return registro_libro
     except FileNotFoundError:
         print("No hay registros previos en la bilbioteca")
