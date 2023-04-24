@@ -211,8 +211,23 @@ def consultas():
                             hoja["F1"].value ="Año de Publicación"
                             hoja["G1"].value ="Fecha de Adquisición"
                             hoja["H1"].value ="ISBN"
-                            for renglon in listareport:
-                                 hoja.cell(row=2, column=renglon).value = listareport
+                            for i, (clave, valor) in enumerate(listareport):
+                              hoja.cell(row=i+2, column=1).value = clave
+                              hoja.cell(row=i+2, column=2).value = valor[0]
+                              hoja.cell(row=i+2, column=3).value = valor[1]
+                              hoja.cell(row=i+2, column=4).value = valor[2]
+                              hoja.cell(row=i+2, column=5).value = valor[3]
+                              hoja.cell(row=i+2, column=6).value = valor[4]
+                              hoja.cell(row=i+2, column=7).value = valor[5]
+                            for i, dato in enumerate(listareport):
+                              folio, titulo, autor, genero, publi, fecha, isbn = dato[0], dato[1][0], dato[1][1], dato[1][2], dato[1][3], dato[1][4], dato[1][5]
+                              hoja.cell(row=i+2, column=2).value = folio
+                              hoja.cell(row=i+2, column=3).value = titulo
+                              hoja.cell(row=i+2, column=4).value = autor
+                              hoja.cell(row=i+2, column=5).value = genero
+                              hoja.cell(row=i+2, column=6).value = publi
+                              hoja.cell(row=i+2, column=7).value = fecha
+                              hoja.cell(row=i+2, column=8).value = isbn
                             libro.save(f"Reporte de Catalogo completo-{datetime.datetime.now()}.xlsx")
                             print("Reporte creado exitosamente!")
                     elif reportajes=="2":
@@ -278,8 +293,23 @@ def consultas():
                             hoja["F1"].value ="Año de Publicación"
                             hoja["G1"].value ="Fecha de Adquisición"
                             hoja["H1"].value ="ISBN"
-                            for renglon in listareport:
-                                 hoja.cell(row=2, column=renglon).value = listareport
+                            for i, (clave, valor) in enumerate(listareport):
+                              hoja.cell(row=i+2, column=1).value = clave
+                              hoja.cell(row=i+2, column=2).value = valor[0]
+                              hoja.cell(row=i+2, column=3).value = valor[1]
+                              hoja.cell(row=i+2, column=4).value = valor[2]
+                              hoja.cell(row=i+2, column=5).value = valor[3]
+                              hoja.cell(row=i+2, column=6).value = valor[4]
+                              hoja.cell(row=i+2, column=7).value = valor[5]
+                            for i, dato in enumerate(listareport):
+                              folio, titulo, autor, genero, publi, fecha, isbn = dato[0], dato[1][0], dato[1][1], dato[1][2], dato[1][3], dato[1][4], dato[1][5]
+                              hoja.cell(row=i+2, column=2).value = folio
+                              hoja.cell(row=i+2, column=3).value = titulo
+                              hoja.cell(row=i+2, column=4).value = autor
+                              hoja.cell(row=i+2, column=5).value = genero
+                              hoja.cell(row=i+2, column=6).value = publi
+                              hoja.cell(row=i+2, column=7).value = fecha
+                              hoja.cell(row=i+2, column=8).value = isbn
                             libro.save(f"Reporte por Autor-{datetime.datetime.now()}.xlsx")
                             print("Reporte creado exitosamente!")
                     elif reportajes=="3":
@@ -343,8 +373,23 @@ def consultas():
                             hoja["F1"].value ="Año de Publicación"
                             hoja["G1"].value ="Fecha de Adquisición"
                             hoja["H1"].value ="ISBN"
-                            for renglon in listareport:
-                                 hoja.cell(row=2, column=renglon).value = listareport
+                            for i, (clave, valor) in enumerate(listareport):
+                              hoja.cell(row=i+2, column=1).value = clave
+                              hoja.cell(row=i+2, column=2).value = valor[0]
+                              hoja.cell(row=i+2, column=3).value = valor[1]
+                              hoja.cell(row=i+2, column=4).value = valor[2]
+                              hoja.cell(row=i+2, column=5).value = valor[3]
+                              hoja.cell(row=i+2, column=6).value = valor[4]
+                              hoja.cell(row=i+2, column=7).value = valor[5]
+                            for i, dato in enumerate(listareport):
+                              folio, titulo, autor, genero, publi, fecha, isbn = dato[0], dato[1][0], dato[1][1], dato[1][2], dato[1][3], dato[1][4], dato[1][5]
+                              hoja.cell(row=i+2, column=2).value = folio
+                              hoja.cell(row=i+2, column=3).value = titulo
+                              hoja.cell(row=i+2, column=4).value = autor
+                              hoja.cell(row=i+2, column=5).value = genero
+                              hoja.cell(row=i+2, column=6).value = publi
+                              hoja.cell(row=i+2, column=7).value = fecha
+                              hoja.cell(row=i+2, column=8).value = isbn
                             libro.save(f"Reporte por genero-{datetime.datetime.now()}.xlsx")
                             print("Reporte creado exitosamente!")
                         else:
