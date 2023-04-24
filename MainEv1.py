@@ -1,6 +1,7 @@
 import datetime
 import re
 import csv
+import openpyxl
 start=False
 def registro():
     print("-" * 40)
@@ -16,11 +17,11 @@ def registro():
                             break
                     
                     while True:
-                        autor=input(f"Ingrese el autor de {titulo} ")
-                        if autor.strip() == '':
+                        genero=input(f"Ingrese el genero de {titulo} ")
+                        if genero.strip() == '':
                             print("El a1utor del libro es un campo obligatorio")
-                        elif (not bool(re.match("^[A-Za-z ÑÁÉÍÓÚÜ]{1,100}$",autor))):
-                            print("\nEl nombre del autor solo puede contener 100 caracteres como máximo entre letras y espacios.")
+                        elif (not bool(re.match("^[A-Za-z ÑÁÉÍÓÚÜ]{1,100}$",genero))):
+                            print("\nEl nombre del genero solo puede contener 100 caracteres como máximo entre letras y espacios.")
                             continue
                         else: 
                             break
@@ -71,11 +72,11 @@ def registro():
                     else:
                         identificador = 1 
 
-                    registro_libro[identificador] = [titulo.upper(), autor.upper(), genero.upper(), publicacion, fecha_adquisicion, isbn]
+                    registro_libro[identificador] = [titulo.upper(), genero.upper(), genero.upper(), publicacion, fecha_adquisicion, isbn]
                     while True:
                             DatosCorrect=True
                             print("*" * 40)
-                            print(f"Titulo: {titulo} \nAutor: {autor} \nGenero: {genero} \nFecha de publicacion: {publicacion} \nFecha de adquisición: {fecha_adquisicion} \nISBN: {isbn} \n") 
+                            print(f"Titulo: {titulo} \ngenero: {genero} \nGenero: {genero} \nFecha de publicacion: {publicacion} \nFecha de adquisición: {fecha_adquisicion} \nISBN: {isbn} \n") 
                             print("*" * 40)
                             confirmacion=input("¿Son correctos los datos ingresados? (SI/NO)").upper()
                             print("*" * 40)
@@ -88,7 +89,7 @@ def registro():
                                 DatosCorrect=False
                                 print("Vuelva a ingresar los datos")
                                 if identificador in registro_libro:
-                                    titulo, autor, genero, publicacion, fecha_adquisicion, isbn= registro_libro[identificador]
+                                    titulo, genero, genero, publicacion, fecha_adquisicion, isbn= registro_libro[identificador]
                                     del registro_libro[identificador]
                                 break
                             else:
@@ -135,7 +136,7 @@ def consultas():
                         for key,value in regisitems:
                             if value[0]==tituloMayus:
                                 found=True
-                                print("Folio: ",key,"\nTitulo: ",registro_libro[key][0],"\nAutor: ",registro_libro[key][1],"\nGenero: ",registro_libro[key][2],"\nAño de Publicación: ",registro_libro[key][3],"\nFecha_Adquisicion: ",registro_libro[key][4],"\nISBN: ",registro_libro[key][5])
+                                print("Folio: ",key,"\nTitulo: ",registro_libro[key][0],"\ngenero: ",registro_libro[key][1],"\nGenero: ",registro_libro[key][2],"\nAño de Publicación: ",registro_libro[key][3],"\nFecha_Adquisicion: ",registro_libro[key][4],"\nISBN: ",registro_libro[key][5])
                         if found==False:
                             print("No se encontraron libros con el titulo ", tituloMayus)
                             
@@ -146,49 +147,90 @@ def consultas():
                         for key,value in regisitems:
                             if value[5]==isbn:
                                 found=True
-                                print("Folio: ",key,"\nTitulo: ",registro_libro[key][0],"\nAutor: ",registro_libro[key][1],"\nGenero: ",registro_libro[key][2],"\nAño de Publicación: ",registro_libro[key][3],"\nFecha_Adquisicion: ",registro_libro[key][4],"\nISBN: ",registro_libro[key][5])
+                                print("Folio: ",key,"\nTitulo: ",registro_libro[key][0],"\ngenero: ",registro_libro[key][1],"\nGenero: ",registro_libro[key][2],"\nAño de Publicación: ",registro_libro[key][3],"\nFecha_Adquisicion: ",registro_libro[key][4],"\nISBN: ",registro_libro[key][5])
                         if found==False:
                             print("No se encontraron titulos con el ISBN ",isbn)
                     else:
                         print("La opcion ingresada no es correcta, elija de nuevo") 
             if sub_menu == "2":
                 while True:
-                    reportajes = input("Reportajes \n ¿Que accion deseas realizar? \n[1] Catalogo Completo \n[2] Reportaje por autor \n[3] Reportaje por genero \n[4] Por año de publicacion \n[5] volver al menu de reportaje \n")
+                    reportajes = input("Reportajes \n ¿Que accion deseas realizar? \n[1] Catalogo Completo \n[2] Reportaje por genero \n[3] Reportaje por genero \n[4] Por año de publicacion \n[5] volver al menu de reportaje \n")
                     if reportajes=="1":
                         listareport=list(registro_libro.items())
                         if listareport:
-                            print(f"Folio \t Titulo \t\t Autor \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
+                            print(f"Folio \t Titulo \t\t genero \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
                             print("*"*100)
                             for Clave,valor in listareport:
                                 print(f'{Clave:4} \t  {valor[0]:15} \t {valor[1]:15} \t {valor[2]:10} \t {valor[3]:5} \t\t {valor[4]:5} \t {valor[5]:15} ')
                             print("*"*100)
                         else:
                             print("No se han registrado libros.")
-
+                        descargar = input("¿Exportar este reporte? \n[1] Exportar el reportaje en CSV \n[2] Exportar el reportaje en Excel \n[3] No exportar el reporte \n")
+                        if descargar =="3":
+                            break
+                        elif descargar =="1":
+                            break
+                        elif descargar =="2":
+                            libro = openpyxl.Workbook()
+                            libro.iso_dates = True 
+                            hoja = libro["Sheet"] 
+                            hoja.title = "Reporte por genero"
+                            hoja["B1"].value ="Folio"
+                            hoja["C1"].value ="Titulo"
+                            hoja["D1"].value ="genero"
+                            hoja["E1"].value ="Genero"
+                            hoja["F1"].value ="Año de Publicación"
+                            hoja["G1"].value ="Fecha de Adquisición"
+                            hoja["H1"].value ="ISBN"
+                            for renglon in listareport:
+                                 hoja.cell(row=2, column=renglon).value = listareport
+                            libro.save(f"Reporte por genero-{datetime.datetime.now()}.xlsx")
+                            print("Reporte creado exitosamente!")
                     elif reportajes=="2":
-                        foundautor=False
-                        autorsel = input("Favor de introducir el autor: ")
-                        mayusautorsel=autorsel.upper()
+                        foundgenero=False
+                        generosel = input("Favor de introducir el genero: ")
+                        mayusgenerosel=generosel.upper()
                         listareport=list(registro_libro.items())
                         if listareport:
-                            print(f"Folio \t Titulo \t\t Autor \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
+                            print(f"Folio \t Titulo \t\t genero \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
                             print("*"*100)
                             for key,value in listareport:
-                                if value[1]==mayusautorsel:
-                                    foundautor=True
+                                if value[1]==mayusgenerosel:
+                                    foundgenero=True
                                     print(f'{key:4} \t  {value[0]:15} \t {value[1]:15} \t {value[2]:10} \t {value[3]:5} \t\t {value[4]:5} \t {value[5]:15}')
-                            if foundautor==False:
-                                print("No hay libros registrados de este autor")
+                            if foundgenero==False:
+                                print("No hay libros registrados de este genero")
                             print("*"*100)
                         else:
-                            print("No se han registrado libros por lo que no hay libros de este autor.")
+                            print("No se han registrado libros por lo que no hay libros de este genero.")
+                        descargar = input("¿Exportar este reporte? \n[1] Exportar el reportaje en CSV \n[2] Exportar el reportaje en Excel \n[3] No exportar el reporte \n")
+                        if descargar =="3":
+                            break
+                        elif descargar =="1":
+                            break
+                        elif descargar =="2":
+                            libro = openpyxl.Workbook()
+                            libro.iso_dates = True 
+                            hoja = libro["Sheet"] 
+                            hoja.title = "Reporte por genero"
+                            hoja["B1"].value ="Folio"
+                            hoja["C1"].value ="Titulo"
+                            hoja["D1"].value ="genero"
+                            hoja["E1"].value ="Genero"
+                            hoja["F1"].value ="Año de Publicación"
+                            hoja["G1"].value ="Fecha de Adquisición"
+                            hoja["H1"].value ="ISBN"
+                            for renglon in listareport:
+                                 hoja.cell(row=2, column=renglon).value = listareport
+                            libro.save(f"Reporte por genero-{datetime.datetime.now()}.xlsx")
+                            print("Reporte creado exitosamente!")
                     elif reportajes=="3":
                         foundgen=False
                         generosel = input("Favor de introducir el genero:   ")
                         mayusgenerosel=generosel.upper()
                         listareport=list(registro_libro.items())
                         if listareport:
-                            print(f"Folio \t Titulo \t\t Autor \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
+                            print(f"Folio \t Titulo \t\t genero \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
                             print("*"*100)
                             for key,value in listareport:
                                 if value[2]==mayusgenerosel:
@@ -197,25 +239,65 @@ def consultas():
                             if foundgen==False:
                                 print("No hay libros registrados de este genero")
                             print("*"*100)
+                        descargar = input("¿Exportar este reporte? \n[1] Exportar el reportaje en CSV \n[2] Exportar el reportaje en Excel \n[3] No exportar el reporte \n")
+                        if descargar =="3":
+                            break
+                        elif descargar =="1":
+                            break
+                        elif descargar =="2":
+                            libro = openpyxl.Workbook()
+                            libro.iso_dates = True 
+                            hoja = libro["Sheet"] 
+                            hoja.title = "Reporte por genero"
+                            hoja["B1"].value ="Folio"
+                            hoja["C1"].value ="Titulo"
+                            hoja["D1"].value ="Autor"
+                            hoja["E1"].value ="Genero"
+                            hoja["F1"].value ="Año de Publicación"
+                            hoja["G1"].value ="Fecha de Adquisición"
+                            hoja["H1"].value ="ISBN"
+                            for renglon in listareport:
+                                 hoja.cell(row=2, column=renglon).value = listareport
+                            libro.save(f"Reporte por genero-{datetime.datetime.now()}.xlsx")
+                            print("Reporte creado exitosamente!")
                         else:
                             print("No se han registrado libros por lo que no hay libros de este genero.")
-
                     elif reportajes=="4":
                         foundyear=False
                         añosel = input("Favor de introducir el año: ")
                         mayusañosel=añosel.upper()
                         listareport=list(registro_libro.items())
                         if listareport:
-                            print(f"Folio \t Titulo \t\t Autor \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
+                            print(f"Folio \t Titulo \t\t genero \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
                             print("*"*100)
                             for key,value in listareport:
                                 if value[3]==mayusañosel:
                                     foundyear=True
                                     print(f'{key:4} \t  {value[0]:15} \t {value[1]:15} \t {value[2]:10} \t {value[3]:5} \t\t {value[4]:5} \t {value[5]:15}')
+                                    print("*"*100)
+                        descargar = input("¿Exportar este reporte? \n[1] Exportar el reportaje en CSV \n[2] Exportar el reportaje en Excel \n[3] No exportar el reporte \n")
+                        if descargar =="3":
+                            break
+                        elif descargar =="1":
+                            break
+                        elif descargar =="2":
+                            libro = openpyxl.Workbook()
+                            libro.iso_dates = True 
+                            hoja = libro["Sheet"] 
+                            hoja.title = "Reporte por Año de publicación"
+                            hoja["B1"].value ="Folio"
+                            hoja["C1"].value ="Titulo"
+                            hoja["D1"].value ="Autor"
+                            hoja["E1"].value ="Genero"
+                            hoja["F1"].value ="Año de Publicación"
+                            hoja["G1"].value ="Fecha de Adquisición"
+                            hoja["H1"].value ="ISBN"
+                            for renglon in listareport:
+                                 hoja.cell(row=2, column=renglon).value = listareport
+                            libro.save(f"Reporte por Año de publicacion-{datetime.datetime.now()}.xlsx")
+                            print("Reporte creado exitosamente!")
                             if foundyear==False:
                                 print("No hay libros registrados de este año de publicación")
-
-                            print("*"*100)
                         else:
                             print("No se han registrado libros por lo que no hay libros con este año de publicación.")
 
@@ -231,7 +313,7 @@ def GuardarArchivo():
     listareport=list(registro_libro.items())
     archivo = open("Registro.csv","w",newline="")
     grabador=csv.writer(archivo)
-    grabador.writerow(("Clave","Titulo","Autor","Genero","f_publicacion","fecha_adquisicion","isbn"))
+    grabador.writerow(("Clave","Titulo","genero","Genero","f_publicacion","fecha_adquisicion","isbn"))
     grabador.writerows([(clave,datos[0],datos[1],datos[2],datos[3],datos[4],datos[5]) for clave,datos in listareport])
     archivo.close
 
@@ -242,8 +324,8 @@ def CargarDatos():
             lector=csv.reader(archivo)
             next(lector)
 
-            for clave, titulo,autor,genero,f_publicacion,fecha_adq,isbn in lector:
-                registro_libro[int(clave)]=(titulo,autor,genero,f_publicacion,fecha_adq,isbn)
+            for clave, titulo,genero,genero,f_publicacion,fecha_adq,isbn in lector:
+                registro_libro[int(clave)]=(titulo,genero,genero,f_publicacion,fecha_adq,isbn)
         return registro_libro
     except FileNotFoundError:
         print("No hay registros previos en la bilbioteca")
