@@ -169,7 +169,36 @@ def consultas():
                         if descargar =="3":
                             break
                         elif descargar =="1":
-                            break
+                             def GuardarArchivo_general():
+                                listareport=list(registro_libro.items())
+                                archivo4 = open("ReporteCompleto.csv","w",newline="")
+                                grabador1=csv.writer(archivo4)
+                                grabador1.writerow(("Clave","Titulo","genero","Genero","f_publicacion","fecha_adquisicion","isbn"))
+                                grabador1.writerows([(clave,datos[0],datos[1],datos[2],datos[3],datos[4],datos[5]) for clave,datos in listareport])
+                                archivo4.close
+
+                             def reporte_completo():
+                                try:
+                                    registro_libro=dict()
+                                    with open("ReporteCompleto.csv","r",newline="") as archivo4:
+                                        lector=csv.reader(archivo4)
+                                        next(lector)
+
+                                        for clave, titulo,autor,genero,f_publicacion,fecha_adq,isbn in lector:
+                                            registro_libro[int(clave)]=(titulo,genero,genero,f_publicacion,fecha_adq,isbn)
+                                    return registro_libro
+                                except FileNotFoundError:
+                                    print("No hay registros previos en la bilbioteca")
+                                    registro_libro=dict()
+                                    return registro_libro
+                                except csv.Error as fallocsv:
+                                    print("Ocurrió un error inesperado y no se cargaron los registros")
+                                    registro_libro=dict()
+                                    return registro_libro
+                                except Exception:
+                                    print("Deido a un error no se han podido cargar los registros.")
+                                    registro_libro=dict()
+                                    return registro_libro
                         elif descargar =="2":
                             libro = openpyxl.Workbook()
                             libro.iso_dates = True 
@@ -207,7 +236,36 @@ def consultas():
                         if descargar =="3":
                             break
                         elif descargar =="1":
-                            break
+                             def GuardarArchivo_autor():
+                                listareport=list(registro_libro.items())
+                                archivo3= open("autor.csv","w",newline="")
+                                grabador3=csv.writer(archivo3)
+                                grabador3.writerow(("Clave","Titulo","genero","Genero","f_publicacion","fecha_adquisicion","isbn"))
+                                grabador3.writerows([(clave,datos[0],datos[1],datos[2],datos[3],datos[4],datos[5]) for clave,datos in listareport])
+                                archivo3.close
+
+                             def reporte_autor():
+                                try:
+                                    registro_libro=dict()
+                                    with open("autor.csv","r",newline="") as archivo3:
+                                        lector=csv.reader(archivo3)
+                                        next(lector)
+
+                                        for clave, titulo,autor,genero,f_publicacion,fecha_adq,isbn in lector:
+                                            registro_libro[int(clave)]=(titulo,genero,genero,f_publicacion,fecha_adq,isbn)
+                                    return registro_libro
+                                except FileNotFoundError:
+                                    print("No hay registros previos en la bilbioteca")
+                                    registro_libro=dict()
+                                    return registro_libro
+                                except csv.Error as fallocsv:
+                                    print("Ocurrió un error inesperado y no se cargaron los registros")
+                                    registro_libro=dict()
+                                    return registro_libro
+                                except Exception:
+                                    print("Deido a un error no se han podido cargar los registros.")
+                                    registro_libro=dict()
+                                    return registro_libro
                         elif descargar =="2":
                             libro = openpyxl.Workbook()
                             libro.iso_dates = True 
@@ -243,7 +301,36 @@ def consultas():
                         if descargar =="3":
                             break
                         elif descargar =="1":
-                            break
+                             def GuardarArchivo_genero():
+                                listareport=list(registro_libro.items())
+                                archivo2 = open("Genero.csv","w",newline="")
+                                grabador2=csv.writer(archivo2)
+                                grabador2.writerow(("Clave","Titulo","genero","Genero","f_publicacion","fecha_adquisicion","isbn"))
+                                grabador2.writerows([(clave,datos[0],datos[1],datos[2],datos[3],datos[4],datos[5]) for clave,datos in listareport])
+                                archivo2.close
+
+                             def reporte_genero():
+                                try:
+                                    registro_libro=dict()
+                                    with open("Genero.csv","r",newline="") as archivo2:
+                                        lector=csv.reader(archivo2)
+                                        next(lector)
+
+                                        for clave, titulo,autor,genero,f_publicacion,fecha_adq,isbn in lector:
+                                            registro_libro[int(clave)]=(titulo,genero,genero,f_publicacion,fecha_adq,isbn)
+                                    return registro_libro
+                                except FileNotFoundError:
+                                    print("No hay registros previos en la bilbioteca")
+                                    registro_libro=dict()
+                                    return registro_libro
+                                except csv.Error as fallocsv:
+                                    print("Ocurrió un error inesperado y no se cargaron los registros")
+                                    registro_libro=dict()
+                                    return registro_libro
+                                except Exception:
+                                    print("Deido a un error no se han podido cargar los registros.")
+                                    registro_libro=dict()
+                                    return registro_libro
                         elif descargar =="2":
                             libro = openpyxl.Workbook()
                             libro.iso_dates = True 
@@ -279,7 +366,36 @@ def consultas():
                         if descargar =="3":
                             break
                         elif descargar =="1":
-                            break
+                            def GuardarArchivo_fecha():
+                                listareport=list(registro_libro.items())
+                                archivo1 = open("FechaPublicacion.csv","w",newline="")
+                                grabador1=csv.writer(archivo1)
+                                grabador1.writerow(("Clave","Titulo","genero","Genero","f_publicacion","fecha_adquisicion","isbn"))
+                                grabador1.writerows([(clave,datos[0],datos[1],datos[2],datos[3],datos[4],datos[5]) for clave,datos in listareport])
+                                archivo1.close
+
+                            def reporte_publicacion():
+                                try:
+                                    registro_libro=dict()
+                                    with open("FechaPublicacion.csv","r",newline="") as archivo1:
+                                        lector=csv.reader(archivo1)
+                                        next(lector)
+
+                                        for clave, titulo,genero,genero,f_publicacion,fecha_adq,isbn in lector:
+                                            registro_libro[int(clave)]=(titulo,genero,genero,f_publicacion,fecha_adq,isbn)
+                                    return registro_libro
+                                except FileNotFoundError:
+                                    print("No hay registros previos en la bilbioteca")
+                                    registro_libro=dict()
+                                    return registro_libro
+                                except csv.Error as fallocsv:
+                                    print("Ocurrió un error inesperado y no se cargaron los registros")
+                                    registro_libro=dict()
+                                    return registro_libro
+                                except Exception:
+                                    print("Deido a un error no se han podido cargar los registros.")
+                                    registro_libro=dict()
+                                    return registro_libro
                         elif descargar =="2":
                             libro = openpyxl.Workbook()
                             libro.iso_dates = True 
