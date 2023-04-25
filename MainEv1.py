@@ -336,23 +336,30 @@ def ExportArchGenero_csv(generosearch):
     archivo4 = open(nombrarch,"w",newline="")
     grabador1=csv.writer(archivo4)
     grabador1.writerow(("Clave","Titulo","Autor","Genero","f_publicacion","fecha_adquisicion","isbn"))
-    #Aqui va el codigo que filtra lo que se escribe en el archivo y que escribe en el archivo
-
-    archivo4.close
+    for clave,datos in listareport:
+        if datos[2]==generosearch:
+            grabador1.writerows([(clave,datos[0],datos[1],datos[2],datos[3],datos[4],datos[5])])
+    archivo4.close()
     ruta = os.getcwd()
     print("El archivo generado tiene por nombre ",nombrarch," y esta en la ruta ",ruta)
+
 
 def ExportArchAñoPublic_csv(añosearch):
-    listareport=list(registro_libro.items())
+    listareport = list(registro_libro.items())
     nombrarch = "ReporteAñoPublicacion" + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")) + ".csv"
-    archivo4 = open(nombrarch,"w",newline="")
-    grabador1=csv.writer(archivo4)
-    grabador1.writerow(("Clave","Titulo","Autor","Genero","f_publicacion","fecha_adquisicion","isbn"))
-    #Aqui va el codigo que filtra lo que se escribe en el archivo y que escribe en el archivo
-
-    archivo4.close
+    archivo4 = open(nombrarch, "w", newline="")
+    grabador1 = csv.writer(archivo4)
+    grabador1.writerow(("Clave", "Titulo", "Autor", "Genero", "f_publicacion", "fecha_adquisicion", "isbn"))
+    
+    for clave, datos in listareport:
+        año = datos[3].split("/")[-1]  
+        if año == añosearch:
+            grabador1.writerows([(clave, datos[0], datos[1], datos[2], datos[3], datos[4], datos[5])])
+    
+    archivo4.close()
     ruta = os.getcwd()
-    print("El archivo generado tiene por nombre ",nombrarch," y esta en la ruta ",ruta)
+    print("El archivo generado tiene por nombre ", nombrarch, " y esta en la ruta ", ruta)
+
 
 def ExportArchComplt_Excel():
     listareport=list(registro_libro.items())
