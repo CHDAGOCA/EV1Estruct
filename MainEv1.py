@@ -3,6 +3,10 @@ import re
 import csv
 import os
 import openpyxl
+import sqlite3
+import sys
+import os.path
+from sqlite3 import Error
 start=False
 def registro():
     print("-" * 40)
@@ -284,27 +288,44 @@ def GuardarArchivo():
     archivo.close
 
 def CargarDatos():
-    try:
-        registro_libro=dict()
-        with open("Registro.csv","r",newline="") as archivo:
-            lector=csv.reader(archivo)
-            next(lector)
+    file_exists = os.path.exists('Biblioteca.db')
+    if not(file_exists):
+        try:
+            with sqlite3.connect("Biblioteca.db") as conn:
+                mi_cursor=conn.cursor()
+                mi_cursor.execute("CREATE TABLE IF NOT EXISTS generos (clave INTEGER PRIMARY KEY, GenNombre TEXT NOT NULL, status INTEGER NOT NULL);")
+                mi_cursor.execute("CREATE TABLE IF NOT EXISTS autores (clave INTEGER PRIMARY KEY, AutNombre TEXT NOT NULL, status INTEGER NOT NULL);")
+                mi_cursor.execute("CREATE TABLE IF NOT EXISTS Libros (clave INTEGER PRIMARY KEY, titulo TEXT NOT NULL, autor INTEGER NOT NULL, \
+                                  genero INTEGER NOT NULL, añopublicacion INTEGER NOT NULL, ISBN TEXT NOT NULL, \
+                                  fechaadq TIMESTAMP, FOREIGN KEY(clave) REFERENCES eventos(status));")
+                print("Tablas creada exitosamente")
+        except Error as e:
+                print(e)
+        except:
+                print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+        finally:
+                conn.close()
+#    try:
+        #registro_libro=dict()
+        #with open("Registro.csv","r",newline="") as archivo:
+            #lector=csv.reader(archivo)
+            #next(lector)
 
-            for clave, titulo,autor,genero,f_publicacion,fecha_adq,isbn in lector:
-                registro_libro[int(clave)]=(titulo,autor,genero,f_publicacion,fecha_adq,isbn)
-        return registro_libro
-    except FileNotFoundError:
-        print("No hay registros previos en la bilbioteca")
-        registro_libro=dict()
-        return registro_libro
-    except csv.Error as fallocsv:
-        print("Ocurrió un error inesperado y no se cargaron los registros")
-        registro_libro=dict()
-        return registro_libro
-    except Exception:
-        print("Deido a un error no se han podido cargar los registros.")
-        registro_libro=dict()
-        return registro_libro
+            #for clave, titulo,autor,genero,f_publicacion,fecha_adq,isbn in lector:
+                #registro_libro[int(clave)]=(titulo,autor,genero,f_publicacion,fecha_adq,isbn)
+        #return registro_libro
+#    except FileNotFoundError:
+        #print("No hay registros previos en la bilbioteca")
+        #registro_libro=dict()
+        #return registro_libro
+#    except csv.Error as fallocsv:
+        #print("Ocurrió un error inesperado y no se cargaron los registros")
+        #registro_libro=dict()
+        #return registro_libro
+#    except Exception:
+        #print("Deido a un error no se han podido cargar los registros.")
+        #registro_libro=dict()
+        #return registro_libro
 
 def ExportArchComplt_csv():
     listareport=list(registro_libro.items())
@@ -460,6 +481,11 @@ def ExportArchAñoPublic_Excel(añosearch):
             hoja.cell(row=i+2, column=8).value = valor[5]
     libro.save(archname)
     print("El reporte ", archname ," fue creado exitosamente y esta en ",ruta)
+
+
+def CrearTablas():
+    print("A")
+
 
 while True:
     if start==False:
