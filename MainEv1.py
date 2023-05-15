@@ -1,9 +1,14 @@
-import datetime
+from datetime import date, datetime
 import re
 import csv
 import os
 import openpyxl
+import sqlite3
+import sys
+import os.path
+from sqlite3 import Error
 start=False
+
 def registro():
     print("-" * 40)
     print("Registro de libro")
@@ -20,7 +25,7 @@ def registro():
                     while True:
                         autor=input(f"Ingrese el autor de {titulo} ")
                         if autor.strip() == '':
-                            print("El a1utor del libro es un campo obligatorio")
+                            print("El autor del libro es un campo obligatorio")
                         elif (not bool(re.match("^[A-Za-z ñáéíóúüÑÁÉÍÓÚÜ]{1,100}$",autor))):
                             print("\nEl nombre del autor solo puede contener 100 caracteres como máximo entre letras y espacios.")
                             continue
@@ -30,7 +35,7 @@ def registro():
                     while True:
                         genero=input(f"Ingrese el genero al que pertenece ")
                         if genero.strip() == '':
-                            print("El Genero del libro es un campo obligatorio")
+                            print("El genero del libro es un campo obligatorio")
                         elif (not bool(re.match("^[A-Za-z ñáéíóúüÑÁÉÍÓÚÜ]{1,100}$",genero))):
                             print("\nEl genero solo puede contener 100 caracteres como máximo con solo letras y espacios.")
                             continue
@@ -38,13 +43,13 @@ def registro():
                             break
 
                     while True:
-                        publicacion=input(f"Ingrese el año de publicación del libro (YYYY) {titulo}  ")
+                        publicacion=input(f"Ingrese el año de publicación del libro {titulo} (YYYY) ")
                         if (not bool(re.match("^[0-9]{4}$", publicacion))):
                             print("\nEl año de publicación del libro solo pueden ser 4 caracteres númericos.")
                             continue
                         fecha_procesada = datetime.datetime.strptime(publicacion, "%Y").date() 
                         fecha_actual = datetime.date.today()
-                        print(fecha_procesada)
+                        #print(fecha_procesada,type(fecha_procesada))
                         if fecha_procesada > fecha_actual:
                             print("Esta fecha no es valida")
                         else:
@@ -163,7 +168,6 @@ def consultas():
                     reportajes = input("Reportajes \n ¿Que accion deseas realizar? \n[1] Catalogo Completo \n[2] Reportaje por autor \n[3] Reportaje por genero \n[4] Por año de publicacion \n[5] volver al menu de reportaje \n")
                     listareport=list(registro_libro.items())
                     if reportajes=="1":
-                        listareport=list(registro_libro.items())
                         if listareport:
                             print(f"Folio \t Titulo \t\t Autor \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
                             print("*"*100)
@@ -187,7 +191,6 @@ def consultas():
                                 print(value[1])
                         autorsel = input("Favor de introducir el autor: ")
                         mayusautorsel=autorsel.upper()
-                        listareport=list(registro_libro.items())
                         if listareport:
                             print(f"Folio \t Titulo \t\t Autor \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
                             print("*"*100)
@@ -217,7 +220,6 @@ def consultas():
                                 print(value[2])
                         generosel = input("Favor de introducir el genero:   ")
                         mayusgenerosel=generosel.upper()
-                        listareport=list(registro_libro.items())
                         if listareport:
                             print(f"Folio \t Titulo \t\t Autor \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
                             print("*"*100)
@@ -244,7 +246,6 @@ def consultas():
                         foundyear=False
                         añosel = input("Favor de introducir el año: ")
                         mayusañosel=añosel.upper()
-                        listareport=list(registro_libro.items())
                         if listareport:
                             print(f"Folio \t Titulo \t\t Autor \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
                             print("*"*100)
@@ -283,28 +284,48 @@ def GuardarArchivo():
     grabador.writerows([(clave,datos[0],datos[1],datos[2],datos[3],datos[4],datos[5]) for clave,datos in listareport])
     archivo.close
 
-def CargarDatos():
-    try:
-        registro_libro=dict()
-        with open("Registro.csv","r",newline="") as archivo:
-            lector=csv.reader(archivo)
-            next(lector)
+def CrearTablas():
+    file_exists = os.path.exists('Biblioteca.db')
+    if not(file_exists):
+        try:
+            with sqlite3.connect("Biblioteca.db") as conn:
+                mi_cursor=conn.cursor()
+                mi_cursor.execute("CREATE TABLE IF NOT EXISTS generos (clave INTEGER PRIMARY KEY, GenNombre TEXT NOT NULL);")
+                mi_cursor.execute("CREATE TABLE IF NOT EXISTS autores (clave INTEGER PRIMARY KEY, AutNombre TEXT NOT NULL, AutApellidos TEXT NOT NULL);")
+                mi_cursor.execute("CREATE TABLE IF NOT EXISTS Libros (clave INTEGER PRIMARY KEY, titulo TEXT NOT NULL, autor INTEGER NOT NULL, \
+                                  genero INTEGER NOT NULL, añopublicacion timestamp, ISBN TEXT NOT NULL, \
+                                  fechaadq TIMESTAMP, FOREIGN KEY(autor) REFERENCES autores(clave), FOREIGN KEY(genero) REFERENCES genero(clave));")
+                print("Tablas creada exitosamente")
+        except Error as e:
+                print(e)
+        except:
+                print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+        finally:
+                conn.close()
+    else:
+        print("Archivo db existente.")
 
-            for clave, titulo,autor,genero,f_publicacion,fecha_adq,isbn in lector:
-                registro_libro[int(clave)]=(titulo,autor,genero,f_publicacion,fecha_adq,isbn)
-        return registro_libro
-    except FileNotFoundError:
-        print("No hay registros previos en la bilbioteca")
-        registro_libro=dict()
-        return registro_libro
-    except csv.Error as fallocsv:
-        print("Ocurrió un error inesperado y no se cargaron los registros")
-        registro_libro=dict()
-        return registro_libro
-    except Exception:
-        print("Deido a un error no se han podido cargar los registros.")
-        registro_libro=dict()
-        return registro_libro
+#    try:
+        #registro_libro=dict()
+        #with open("Registro.csv","r",newline="") as archivo:
+            #lector=csv.reader(archivo)
+            #next(lector)
+
+            #for clave, titulo,autor,genero,f_publicacion,fecha_adq,isbn in lector:
+                #registro_libro[int(clave)]=(titulo,autor,genero,f_publicacion,fecha_adq,isbn)
+        #return registro_libro
+#    except FileNotFoundError:
+        #print("No hay registros previos en la bilbioteca")
+        #registro_libro=dict()
+        #return registro_libro
+#    except csv.Error as fallocsv:
+        #print("Ocurrió un error inesperado y no se cargaron los registros")
+        #registro_libro=dict()
+        #return registro_libro
+#    except Exception:
+        #print("Deido a un error no se han podido cargar los registros.")
+        #registro_libro=dict()
+        #return registro_libro
 
 def ExportArchComplt_csv():
     listareport=list(registro_libro.items())
@@ -468,19 +489,257 @@ def ExportArchAñoPublic_Excel(añosearch):
     libro.save(archname)
     print("El reporte ", archname ," fue creado exitosamente y esta en ",ruta)
 
+
+def GuardarLibros(titulo,autor,genero,añopub,isbn,fechadqdia,fechadqmes,fechañodq):
+    try:
+        with sqlite3.connect("Biblioteca.db") as conn:
+            mi_cursor=conn.cursor()
+            valores = (titulo,autor,genero,datetime.datetime(añopub,1,1),isbn,datetime.datetime(fechañodq,fechadqmes,fechadqdia))
+            mi_cursor.execute("INSERT INTO Libros (titulo,autor,genero,añopublicacion,ISBN,fechaadq) VALUES(?,?,?,?,?,?)", valores)
+        print("Registros agregado exitosamente.")
+    except Error as e:
+        print(e)
+    except:
+        print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+    finally:
+        conn.close()
+
+def GuardarAutores(nombre,apellidos):
+    try:
+        with sqlite3.connect("Biblioteca.db") as conn:
+            mi_cursor=conn.cursor()
+            valores = (nombre,apellidos)
+            mi_cursor.execute("INSERT INTO autores (AutNombre,AutApellidos) VALUES(?,?)", valores)
+        print("Autor agregado exitosamente.")
+    except Error as e:
+        print(e)
+    except:
+        print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+    finally:
+        conn.close()
+
+def GuardarGeneros(genero):
+    try:
+        with sqlite3.connect("Biblioteca.db") as conn:
+            mi_cursor=conn.cursor()
+            valores = (genero)
+            mi_cursor.execute("INSERT INTO generos (GenNombre) VALUES(?)", valores)
+        print("Genero agregado exitosamente.")
+    except Error as e:
+        print(e)
+    except:
+        print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+    finally:
+        conn.close()
+
+def registro_autores():
+    while True:
+        out=False
+        autor=""
+        apellidos=""
+        while True:
+            autor=input(f"Favor de ingresar el nombre del autor a registrar ")
+            if autor.strip() == '':
+                print("Favor de no dejar el espacio vacio.")
+            elif (not bool(re.match("^[A-Za-z ñáéíóúüÑÁÉÍÓÚÜ]{1,100}$",autor))):
+                print("\nEl nombre del autor solo puede contener 100 caracteres como máximo entre letras y espacios.")
+                continue
+            else: 
+                break
+        while True:
+            apellidos=input(f"Favor de ingresar los apellidos del autor a registrar ")
+            if apellidos.strip() == '':
+                print("Favor de no dejar el espacio vacio.")
+            elif (not bool(re.match("^[A-Za-z ñáéíóúüÑÁÉÍÓÚÜ]{1,100}$",apellidos))):
+                print("\nLos apellidos del autor solo pueden contener 100 caracteres como máximo entre letras y espacios.")
+                continue
+            else: 
+                break
+
+        GuardarAutores(autor,apellidos)
+        while True:
+            salida=input("Introduzca 1 para registrar otro autor\nIntroduzca 2 para salir de la seccion de registro de autores")
+            if salida=="1":
+                out=False
+                break
+            elif salida=="2":
+                out=True
+                break
+            else:
+                print("Seleccion introducida no valida.")
+        if out==True:
+            break
+
+def registro_generos():
+    while True:
+        out=False
+        while True:
+            genero=input(f"Favor de ingresar el genero a registrar ")
+            if genero.strip() == '':
+                print("Favor de no dejar el espacio vacio.")
+            elif (not bool(re.match("^[A-Za-z ñáéíóúüÑÁÉÍÓÚÜ]{1,100}$",genero))):
+                print("\nEl nombre del genero solo puede contener 100 caracteres como máximo entre letras y espacios.")
+                continue
+            else: 
+                break
+            
+        GuardarGeneros(genero)
+        while True:
+            salida=input("Introduzca 1 para registrar otro genero\nIntroduzca 2 para salir de la seccion de registro de generos")
+            if salida=="1":
+                out=False
+                break
+            elif salida=="2":
+                out=True
+                break
+            else:
+                print("Seleccion introducida no valida.")
+        if out==True:
+            break
+
+def HayAutores():
+    Existen=False
+    try:
+        with sqlite3.connect("Biblioteca.db") as conn:
+            mi_cursor = conn.cursor()
+            mi_cursor.execute("SELECT * FROM autores ORDER BY clave")
+            registros = mi_cursor.fetchall()
+
+        #Procedemos a evaluar si hay registros en la respuesta
+            if registros:
+                Existen=True
+        #Si no hay registros en la respuesta
+            else:
+                Existen=False
+    except Error as e:
+        print (e)
+    except Exception:
+        print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+    finally:
+        conn.close()
+        return Existen
+
+def HayGeneros():
+    Existen=False
+    try:
+        with sqlite3.connect("Biblioteca.db") as conn:
+            mi_cursor = conn.cursor()
+            mi_cursor.execute("SELECT * FROM generos ORDER BY clave")
+            registros = mi_cursor.fetchall()
+
+        #Procedemos a evaluar si hay registros en la respuesta
+            if registros:
+                Existen=True
+        #Si no hay registros en la respuesta
+            else:
+                Existen=False
+    except Error as e:
+        print (e)
+    except Exception:
+        print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+    finally:
+        conn.close()
+        return Existen
+
+def HayLibros():
+    Existen=False
+    try:
+        with sqlite3.connect("Biblioteca.db") as conn:
+            mi_cursor = conn.cursor()
+            mi_cursor.execute("SELECT * FROM Libros ORDER BY clave")
+            registros = mi_cursor.fetchall()
+
+        #Procedemos a evaluar si hay registros en la respuesta
+            if registros:
+                Existen=True
+        #Si no hay registros en la respuesta
+            else:
+                Existen=False
+    except Error as e:
+        print (e)
+    except Exception:
+        print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+    finally:
+        conn.close()
+        return Existen
+
+def ConsultaLibro_TAG(titulo,autor,genero):
+    try:
+        with sqlite3.connect("Biblioteca.db") as conn:
+            mi_cursor = conn.cursor()
+            mi_cursor.execute("SELECT * FROM Libros ORDER BY clave")
+            registros = mi_cursor.fetchall()
+        #Procedemos a evaluar si hay registros en la respuesta
+            if registros:
+                if titulo==1:
+                    print("titulos")
+                    print("*" * 30)
+                    for claves, titulos, autores, generos,añopub, isbn,fecha in registros:
+                        print(f"{titulos:^16}")
+        #Si no hay registros en la respuesta
+            else:
+                print("No hay libros registrados.")
+
+            mi_cursor.execute("SELECT * FROM autores ORDER BY clave")
+            registros = mi_cursor.fetchall()
+        #Procedemos a evaluar si hay registros en la respuesta
+            if registros:
+                if autor==1:
+                    print("nombre\tapellidos")
+                    print("*" * 30)
+                    for claves, nombreaut,apellaut in registros:
+                        print(f"{nombreaut:^16}\t{apellaut}")
+        #Si no hay registros en la respuesta
+            else:
+                print("No hay libros registrados.")
+            
+            mi_cursor.execute("SELECT * FROM generos ORDER BY clave")
+            registros = mi_cursor.fetchall()
+        #Procedemos a evaluar si hay registros en la respuesta
+            if registros:
+                if genero==1:
+                    print("generos")
+                    print("*" * 30)
+                    for claves, generonom in registros:
+                        print(f"{generonom:^16}")
+        #Si no hay registros en la respuesta
+            else:
+                print("No hay libros registrados.")
+    except Error as e:
+        print (e)
+    except Exception:
+        print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+    finally:
+        conn.close()
+    
+
+CrearTablas()
 while True:
     if start==False:
-        registro_libro=CargarDatos()
+        registro_libro={}
         start=True
-    menu_principal=input("Bienvenido a la biblioteca universitaria\n ¿Que accion deseas realizar? \n[1]Registrar un nuevo ejemplar \n[2]Consultas y reportes \n[3]Salir \n")
+    menu_principal=input("Bienvenido a la biblioteca universitaria\n ¿Que accion deseas realizar? \n[1]Registrar un nuevo ejemplar \n[2]Consultas y reportes \n\
+                         [3]Registrar un genero\n[4]Registrar un autor\n[5]Salir")
     if menu_principal== "1":
-      registro()
+        if HayAutores()==False and HayGeneros()==False:
+            print("No hay autores, ni generos registrados por lo que no se pueden registrar libros.\nVolviendo a menu principal....")
+        elif HayGeneros()==False:
+            print("No hay generos registrados, por lo que no se pueden registrar libros.\nVolviendo a menu principal....")
+        elif HayAutores()==False:
+            print("No hay autores registrados, por lo que no se pueden registrar libros.\nVolviendo a menu principal....")
+        else:
+            registro()
     elif menu_principal=="2":
-      consultas()
+        if HayLibros()==False:
+            print("No hay libros registrados, por lo que no hay libros para consultar o reportar.\nVolviendo a menu principal....")
+        else:
+            consultas()
+    elif menu_principal=="5":
+        print("Gracias por visitarnos, vuelva pronto")
+        break
     elif menu_principal=="3":
-      print("Gracias por visitarnos, vuelva pronto")
-      if registro_libro:
-        GuardarArchivo()
-      break
+        registro_generos()
+    elif menu_principal=="4":
+        registro_autores()
     else:
         print("La opcion ingresada no es correcta, elija de nuevo")
