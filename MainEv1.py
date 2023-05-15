@@ -483,11 +483,11 @@ def ExportArchAñoPublic_Excel(añosearch):
     print("El reporte ", archname ," fue creado exitosamente y esta en ",ruta)
 
 
-def GuardarLibros(id,titulo,autor,genero,añopub,isbn,fechadqdia,fechadqmes,fechañodq):
+def GuardarLibros(titulo,autor,genero,añopub,isbn,fechadqdia,fechadqmes,fechañodq):
     try:
         with sqlite3.connect("Biblioteca.db") as conn:
             mi_cursor=conn.cursor()
-            valores = (titulo,autor,genero,datetime.datetime(añopub,1,1),isbn,datetime.datetime(fechadqdia,fechadqmes,fechañodq))
+            valores = (titulo,autor,genero,datetime.datetime(añopub,1,1),isbn,datetime.datetime(fechañodq,fechadqmes,fechadqdia))
             mi_cursor.execute("INSERT INTO Libros (titulo,autor,genero,añopublicacion,ISBN,fechaadq) VALUES(?,?,?,?,?,?)", valores)
         print("Registros agregado exitosamente.")
     except Error as e:
