@@ -9,118 +9,90 @@ import os.path
 from sqlite3 import Error
 start=False
 
+def obtener_autores():
+    cursor.execute("SELECT nombre FROM autores")
+    autores = [autor[0] for autor in cursor.fetchall()]
+    return autores
+
+def obtener_generos():
+    cursor.execute("SELECT nombre FROM generos")
+    generos = [genero[0] for genero in cursor.fetchall()]
+    return generos
+
 def registro():
     print("-" * 40)
     print("Registro de libro")
     print("-" * 40)
+    
+    autores = obtener_autores()
+    generos = obtener_generos()
+
     while True:
+        while True:
             while True:
-                    while True: 
-                        titulo=input("Ingresa el titulo del libro a registrar ")
-                        if titulo.strip() == '': 
-                            print("El titulo es un campo obligatorio ")
-                        else: 
-                            break
-                    
-                    while True:
-                        autor=input(f"Ingrese el autor de {titulo} ")
-                        if autor.strip() == '':
-                            print("El autor del libro es un campo obligatorio")
-                        elif (not bool(re.match("^[A-Za-z ñáéíóúüÑÁÉÍÓÚÜ]{1,100}$",autor))):
-                            print("\nEl nombre del autor solo puede contener 100 caracteres como máximo entre letras y espacios.")
-                            continue
-                        else: 
-                            break
-
-                    while True:
-                        genero=input(f"Ingrese el genero al que pertenece ")
-                        if genero.strip() == '':
-                            print("El genero del libro es un campo obligatorio")
-                        elif (not bool(re.match("^[A-Za-z ñáéíóúüÑÁÉÍÓÚÜ]{1,100}$",genero))):
-                            print("\nEl genero solo puede contener 100 caracteres como máximo con solo letras y espacios.")
-                            continue
-                        else: 
-                            break
-
-                    while True:
-                        publicacion=input(f"Ingrese el año de publicación del libro {titulo} (YYYY) ")
-                        if (not bool(re.match("^[0-9]{4}$", publicacion))):
-                            print("\nEl año de publicación del libro solo pueden ser 4 caracteres númericos.")
-                            continue
-                        fecha_procesada = datetime.datetime.strptime(publicacion, "%Y").date() 
-                        fecha_actual = datetime.date.today()
-                        #print(fecha_procesada,type(fecha_procesada))
-                        if fecha_procesada > fecha_actual:
-                            print("Esta fecha no es valida")
-                        else:
-                            break
-
-                    while True:
-                        fecha_adquisicion=input("Ingrese la fecha en la que se adquirio el libro (aaaa/mm/dd) ")
-                        if (not bool(re.match("^([0-9]{4}[/]?((0[13-9]|1[012])[/]?(0[1-9]|[12][0-9]|30)|(0[13578]|1[02])[/]?31|02[/]?(0[1-9]|1[0-9]|2[0-8]))|([0-9]{2}(([2468][048]|[02468][48])|[13579][26])|([13579][26]|[02468][048])00)[/]?02[/]?29)$",fecha_adquisicion))):
-                            print("\nLa fecha sigue los formatos aaaa/mm/dd y solo acepta dias posibles.")
-                            continue
-                        fecha2_procesada= datetime.datetime.strptime(fecha_adquisicion, "%Y/%m/%d").date() 
-                        if fecha2_procesada < fecha_procesada :
-                            print("La fecha de adquisicion debe ser despues de la fecha de publicacion, ingrese una fecha valida ")
-                        else:
-                            break
-
-                    while True:
-                        isbn=input(str(f"Ingresa la clave de ISBN del libro "))
-                        if len(isbn) == 13 and (bool(re.match("^[0-9]{13}$", isbn))):
-                            break
-                        else:
-                            print("El ISBN debe tener 13 caracteres numericos, vuelva a ingresarlos ")
-
-                    if registro_libro:
-                        identificador = max(registro_libro) +1
-                    else:
-                        identificador = 1 
-
-                    registro_libro[identificador] = [titulo.upper(), autor.upper(), genero.upper(), publicacion, fecha_adquisicion, isbn]
-                    while True:
-                            DatosCorrect=True
-                            print("*" * 40)
-                            print(f"Titulo: {titulo} \nAutor: {autor} \nGenero: {genero} \nFecha de publicacion: {publicacion} \nFecha de adquisición: {fecha_adquisicion} \nISBN: {isbn} \n") 
-                            print("*" * 40)
-                            confirmacion=input("¿Son correctos los datos ingresados? (SI/NO)").upper()
-                            print("*" * 40)
-                            if confirmacion=="SI":
-                                print("*" * 40)
-                                print(f"Se registro el libro\n", registro_libro[identificador])
-                                print("*" * 40)
-                                break
-                            elif confirmacion=="NO": 
-                                DatosCorrect=False
-                                print("Vuelva a ingresar los datos")
-                                if identificador in registro_libro:
-                                    titulo, autor, genero, publicacion, fecha_adquisicion, isbn= registro_libro[identificador]
-                                    del registro_libro[identificador]
-                                break
-                            else:
-                                print("Introduce una de las opciones (Si/NO)")
-                    if DatosCorrect==False:
-                        continue   
-
+                titulo = input("Ingresa el título del libro a registrar: ")
+                if titulo.strip() == '':
+                    print("El título es un campo obligatorio.")
+                else:
                     break
-            seleccion=False
+
             while True:
-                nuevo_registro=input("¿Deseas realizar un nuevo registro? (SI/NO)").upper()
-                if nuevo_registro=="SI":
-                    seleccion=True
-                    break 
-                elif nuevo_registro=="NO":
-                    print("*" * 40)
-                    print("Sus registros han quedado guardados")
+                autor = input(f"Ingrese el autor de '{titulo}': ")
+                if autor.strip() == '':
+                    print("El autor del libro es un campo obligatorio.")
+                elif autor not in autores:
+                    print("El autor no está registrado. Por favor, elija uno de los autores existentes.")
+                    continue
+                else:
+                    break
+
+            while True:
+                genero = input(f"Ingrese el género al que pertenece '{titulo}': ")
+                if genero.strip() == '':
+                    print("El género del libro es un campo obligatorio.")
+                elif genero not in generos:
+                    print("El género no está registrado. Por favor, elija uno de los géneros existentes.")
+                    continue
+                else:
+                    break
+
+            while True:
+                publicacion = input(f"Ingrese el año de publicación del libro '{titulo}' (YYYY): ")
+                if not bool(re.match("^[0-9]{4}$", publicacion)):
+                    print("\nEl año de publicación del libro debe tener 4 caracteres numéricos.")
+                    continue
+                fecha_procesada = datetime.datetime.strptime(publicacion, "%Y").date()
+                fecha_actual = datetime.date.today()
+                if fecha_procesada > fecha_actual:
+                    print("Esta fecha no es válida.")
+                else:
+                    break
+
+            while True:
+                fecha_adquisicion = input("Ingrese la fecha en la que se adquirió el libro (aaaa/mm/dd): ")
+                try:
+                    fecha_adquisicion = datetime.datetime.strptime(fecha_adquisicion, "%Y/%m/%d").date()
+                    dia = fecha_adquisicion.day
+                    mes = fecha_adquisicion.month
+                    anio = fecha_adquisicion.year
+                    break
+                except ValueError:
+                    print("La fecha ingresada no es válida. Por favor, ingrese una fecha en el formato correcto (aaaa/mm/dd).")
+                    continue
+
+            while True:
+                isbn = input(f"Ingrese la clave de ISBN del libro '{titulo}': ")
+                if len(isbn) == 13 and bool(re.match("^[0-9]{13}$", isbn)):
                     break
                 else:
-                    print("Favor de seleccionar una opcion valida.")
-                    continue
-            if seleccion==True:
-                continue
-            else:
-                break
+                    print("El ISBN debe tener 13 caracteres numéricos. Vuelva a ingresarlo.")
+
+def registrar_libro(titulo, autor, genero, publicacion, fecha_adquisicion, isbn):
+    cursor.execute("INSERT INTO libros (titulo, autor, genero, publicacion, fecha_adquisicion, isbn) VALUES (?, ?, ?, ?, ?, ?)",
+                   (titulo, autor, genero, publicacion, fecha_adquisicion, isbn))
+    conexion.commit()
+    print("El libro se ha registrado exitosamente en la base de datos.")
+
 
 def consultas():
         while True:
