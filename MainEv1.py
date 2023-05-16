@@ -229,6 +229,60 @@ def consultas():
 
 
                     if consulta == 3:#Por Autor
+                        pass
+                    if consulta == 4:#Por Genero
+                        pass
+                    if consulta == 5:#Por año de publicacion
+                        pass
+                    if consulta == 6:#Catalogo completo
+                        pass
+
+            if sub_menu == 2:
+                opcion = input("Reportaje \n ¿Qué acción deseas realizar? \n[1] Catalogo completo \n[2] Reporte por Autor \n[3]Reporte por Genero \n[4]Reporte por Año de publicacion\n [5]Volver al menu de reportes")
+
+                if opcion == "1":
+                        try:
+                            with sqlite3.connect("Biblioteca.db") as conn:
+                                mi_cursor = conn.cursor()
+                                registros = mi_cursor.fetchall()
+
+                                print("DEBUG 1")
+
+                                datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, generos.GenNombre, Libros.añopublicacion, Libros.ISBN, Libros.Fechaadq \
+                                        FROM Libros \
+                                        JOIN autores ON Libros.autor = autores.clave \
+                                        JOIN generos ON Libros.genero = generos.clave"
+
+                                mi_cursor.execute(datos)
+                                registros2 = mi_cursor.fetchall()
+
+                                print("DEBUG2")
+
+                                if registros2:
+                                    print("DEBUG 3")
+                                    print("**********Resultados de la búsqueda*********")
+                                    print("Titulo/Nombre del autor/Apellido del autor/Genero/Año de publicacion/ISBN/Fecha de Adquisicion")
+                                    for fila in registros2:
+                                        print(f"{fila[1]} || {fila[2]} {fila[3]} || {fila[4]} || {fila[5]} || {fila[6]} || {fila[7]} ")
+                                else:
+                                    print("No se encontró el libro")
+
+                                exportarP = input("Desea Exportarlo \n[1]Exportar a CSV \n[2]Exportar a msExcel \n[3]No exportar Reporte")
+
+                                if exportarP=="1":
+                                    pass
+                                if exportarP=="2":
+                                    pass
+                                if exportarP=="3":
+                                    pass
+                        except Error as e:
+                            print(e)
+                        except Exception:
+                            print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+                        finally:
+                            conn.close()
+
+                if opcion == "2":
                         try:
                             with sqlite3.connect("Biblioteca.db") as conn:
                                 mi_cursor = conn.cursor()
@@ -270,6 +324,15 @@ def consultas():
                                     print("*" * 35)
                                 else:
                                     print("No se encontró el libro")
+                                
+                                exportarP = input("Desea Exportarlo \n[1]Exportar a CSV \n[2]Exportar a msExcel \n[3]No exportar Reporte")
+
+                                if exportarP=="1":
+                                    pass
+                                if exportarP=="2":
+                                    pass
+                                if exportarP=="3":
+                                    pass
 
                         except Error as e:
                             print(e)
@@ -277,7 +340,7 @@ def consultas():
                             print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
                         finally:
                             conn.close()
-                    if consulta == 4:#Por Genero
+                if opcion == "3":
                         try:
                             with sqlite3.connect("Biblioteca.db") as conn:
                                 mi_cursor = conn.cursor()
@@ -320,13 +383,23 @@ def consultas():
                                 else:
                                     print("No se encontró el libro")
 
+                                exportarP = input("Desea Exportarlo \n[1]Exportar a CSV \n[2]Exportar a msExcel \n[3]No exportar Reporte")
+
+                                if exportarP=="1":
+                                    pass
+                                if exportarP=="2":
+                                    pass
+                                if exportarP=="3":
+                                    pass
+
+
                         except Error as e:
                             print(e)
                         except Exception:
                             print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
                         finally:
                             conn.close()
-                    if consulta == 5:#Por año de publicacion
+                if opcion == "4":
                         try:
                             with sqlite3.connect("Biblioteca.db") as conn:
                                 mi_cursor = conn.cursor()
@@ -357,38 +430,14 @@ def consultas():
                                 else:
                                     print("No se encontró el libro")
 
-                        except Error as e:
-                            print(e)
-                        except Exception:
-                            print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
-                        finally:
-                            conn.close()
-                    if consulta == 6:#Catalogo completo
-                        try:
-                            with sqlite3.connect("Biblioteca.db") as conn:
-                                mi_cursor = conn.cursor()
-                                registros = mi_cursor.fetchall()
+                                exportarP = input("Desea Exportarlo \n[1]Exportar a CSV \n[2]Exportar a msExcel \n[3]No exportar Reporte")
 
-                                print("DEBUG 1")
-
-                                datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, generos.GenNombre, Libros.añopublicacion, Libros.ISBN, Libros.Fechaadq \
-                                        FROM Libros \
-                                        JOIN autores ON Libros.autor = autores.clave \
-                                        JOIN generos ON Libros.genero = generos.clave"
-
-                                mi_cursor.execute(datos)
-                                registros2 = mi_cursor.fetchall()
-
-                                print("DEBUG2")
-
-                                if registros2:
-                                    print("DEBUG 3")
-                                    print("**********Resultados de la búsqueda*********")
-                                    print("Titulo/Nombre del autor/Apellido del autor/Genero/Año de publicacion/ISBN/Fecha de Adquisicion")
-                                    for fila in registros2:
-                                        print(f"{fila[1]} || {fila[2]} {fila[3]} || {fila[4]} || {fila[5]} || {fila[6]} || {fila[7]} ")
-                                else:
-                                    print("No se encontró el libro")
+                                if exportarP=="1":
+                                    pass
+                                if exportarP=="2":
+                                    pass
+                                if exportarP=="3":
+                                    pass
 
                         except Error as e:
                             print(e)
@@ -396,10 +445,8 @@ def consultas():
                             print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
                         finally:
                             conn.close()
-
-            if sub_menu == 2:
-                pass
-
+                if opcion == "5":
+                    pass
         except Error as e:
             print(e)
         except Exception:
@@ -566,32 +613,37 @@ def ExportArchAutores_Excel(autorsearch):
     libro.save(archname)
     print("El reporte ", archname ," fue creado exitosamente y esta en ",ruta)
 
-def ExportArchGenero_Excel(generosearch):
-    listareport=list(registro_libro.items())
-    ruta = os.getcwd()
-    archname = "ReporteGenero" + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")) + ".xlsx"
-    libro = openpyxl.Workbook()
-    libro.iso_dates = True 
-    hoja = libro["Sheet"] 
-    hoja.title = "Reporte de Genero"
-    hoja["B1"].value ="Folio"
-    hoja["C1"].value ="Titulo"
-    hoja["D1"].value ="Autor"
-    hoja["E1"].value ="Genero"
-    hoja["F1"].value ="Año de Publicación"
-    hoja["G1"].value ="Fecha de Adquisición"
-    hoja["H1"].value ="ISBN"
-    for i, (clave, valor) in enumerate(listareport):
-        if valor[2]==generosearch:
-            hoja.cell(row=i+2, column=2).value = clave
-            hoja.cell(row=i+2, column=3).value = valor[0]
-            hoja.cell(row=i+2, column=4).value = valor[1]
-            hoja.cell(row=i+2, column=5).value = valor[2]
-            hoja.cell(row=i+2, column=6).value = valor[3]
-            hoja.cell(row=i+2, column=7).value = valor[4]
-            hoja.cell(row=i+2, column=8).value = valor[5]
-    libro.save(archname)
-    print("El reporte ", archname ," fue creado exitosamente y esta en ",ruta)
+# def ExportArchGenero_Excel(generosearch):
+#     listareport=list(registro_libro.items())
+#     ruta = os.getcwd()
+#     archname = "ReporteGenero" + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")) + ".xlsx"
+#     libro = openpyxl.Workbook()
+#     libro.iso_dates = True 
+#     hoja = libro["Sheet"] 
+#     hoja.title = "Reporte de Genero"
+#     hoja["B1"].value ="Folio"
+#     hoja["C1"].value ="Titulo"
+#     hoja["D1"].value ="Autor"
+#     hoja["E1"].value ="Genero"
+#     hoja["F1"].value ="Año de Publicación"
+#     hoja["G1"].value ="Fecha de Adquisición"
+#     hoja["H1"].value ="ISBN"
+#     for i, (clave, valor) in enumerate(listareport):
+#         if valor[2]==generosearch:
+#             hoja.cell(row=i+2, column=2).value = clave
+#             hoja.cell(row=i+2, column=3).value = valor[0]
+#             hoja.cell(row=i+2, column=4).value = valor[1]
+#             hoja.cell(row=i+2, column=5).value = valor[2]
+#             hoja.cell(row=i+2, column=6).value = valor[3]
+#             hoja.cell(row=i+2, column=7).value = valor[4]
+#             hoja.cell(row=i+2, column=8).value = valor[5]
+#     libro.save(archname)
+#     print("El reporte ", archname ," fue creado exitosamente y esta en ",ruta)
+
+
+
+
+
 
 def ExportArchAñoPublic_Excel(añosearch):
     listareport=list(registro_libro.items())
@@ -1189,5 +1241,8 @@ while True:
         registro_generos()
     elif menu_principal=="4":
         registro_autores()
+
+    elif menu_principal =="6":
+        ExportArchGenero_Excel("ACCION")
     else:
         print("La opcion ingresada no es correcta, elija de nuevo")
