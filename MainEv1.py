@@ -514,11 +514,11 @@ def GuardarAutores(nombre,apellidos):
     finally:
         conn.close()
 
-def GuardarGeneros(genero):
+def GuardarGeneros(nomgen):
     try:
         with sqlite3.connect("Biblioteca.db") as conn:
             mi_cursor=conn.cursor()
-            valores = (genero)
+            valores = (nomgen,)
             mi_cursor.execute("INSERT INTO generos (GenNombre) VALUES(?)", valores)
         print("Genero agregado exitosamente.")
     except Error as e:
@@ -714,8 +714,8 @@ while True:
     if start==False:
         registro_libro={}
         start=True
-    menu_principal=input("Bienvenido a la biblioteca universitaria\n ¿Que accion deseas realizar? \n[1]Registrar un nuevo ejemplar \n[2]Consultas y reportes \n\
-                         [3]Registrar un genero\n[4]Registrar un autor\n[5]Salir")
+    menu_principal=input("Bienvenido a la biblioteca universitaria\n ¿Que accion deseas realizar? \n[1]Registrar un nuevo ejemplar \n[2]Consultas y reportes \
+                         \n[3]Registrar un genero\n[4]Registrar un autor\n[5]Salir")
     if menu_principal== "1":
         if HayAutores()==False and HayGeneros()==False:
             print("No hay autores, ni generos registrados por lo que no se pueden registrar libros.\nVolviendo a menu principal....")
