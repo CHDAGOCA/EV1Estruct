@@ -226,17 +226,7 @@ def consultas():
                             print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
                         finally:
                             conn.close()
-
-
-                    if consulta == 3:#Por Autor
-                        pass
-                    if consulta == 4:#Por Genero
-                        pass
-                    if consulta == 5:#Por año de publicacion
-                        pass
-                    if consulta == 6:#Catalogo completo
-                        pass
-
+                            
             if sub_menu == 2:
                 opcion = input("Reportaje \n ¿Qué acción deseas realizar? \n[1] Catalogo completo \n[2] Reporte por Autor \n[3]Reporte por Genero \n[4]Reporte por Año de publicacion\n [5]Volver al menu de reportes")
 
@@ -245,8 +235,6 @@ def consultas():
                             with sqlite3.connect("Biblioteca.db") as conn:
                                 mi_cursor = conn.cursor()
                                 registros = mi_cursor.fetchall()
-
-                                print("DEBUG 1")
 
                                 datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, generos.GenNombre, Libros.añopublicacion, Libros.ISBN, Libros.Fechaadq \
                                         FROM Libros \
