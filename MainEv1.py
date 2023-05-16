@@ -141,6 +141,7 @@ def consultas():
                                     print("**********Lista de Títulos*********")
                                     for titulo in registros:
                                         print(titulo[0])
+                                    print("*" * 35)
 
                                 buscar_titulo = input("¿Qué título quieres buscar? ")
                                 valores = {"titulo": buscar_titulo}
@@ -190,6 +191,7 @@ def consultas():
                             print("**********Lista de ISBN*********")
                             for isbn in registros:
                                 print(isbn[0])
+                            print("*" * 35)
 
                         buscar_isbn = input("¿Qué título quieres buscar? ")
                         valores2 = {"isbn": buscar_isbn}
