@@ -228,8 +228,8 @@ def consultas():
                             conn.close()
                             
             if sub_menu == "2":
-                opcion = input("Reportaje \n ¿Qué acción deseas realizar? \n[1] Catalogo completo \n[2] Reporte por Autor \n[3]Reporte por Genero \n[4]Reporte por Año de publicacion\n [5]Volver al menu de reportes")
                 while True:
+                    opcion = input("Reportaje \n ¿Qué acción deseas realizar? \n[1] Catalogo completo \n[2] Reporte por Autor \n[3]Reporte por Genero \n[4]Reporte por Año de publicacion\n [5]Volver al menu de reportes")
                     if opcion == "1":
                             try:
                                 with sqlite3.connect("Biblioteca.db") as conn:
@@ -255,11 +255,12 @@ def consultas():
 
                                     while True:
                                         exportarP = input("Desea Exportarlo \n[1]Exportar a CSV \n[2]Exportar a msExcel \n[3]No exportar Reporte")
-
                                         if exportarP=="1":
-                                            GenArch_CatAut_CSV()
+                                            GenArch_CatComp_CSV()
+                                            continue
                                         elif exportarP=="2":
                                             GenArch_CatComp_Excel()
+                                            continue
                                         elif exportarP=="3":
                                             break
                             except Error as e:
