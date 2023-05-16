@@ -125,11 +125,11 @@ def consultas():
                 break
             if sub_menu == 1:
                 while True:
-                    consulta = int(input("Consulta de Título \n ¿Qué acción deseas realizar? \n[1] Por título \n[2] Por ISBN \n[3] Volver al menú de consultas y reportajes \n"))
+                    consulta = int(input("Consulta de Título \n ¿Qué acción deseas realizar? \n[1] Por Título \n[2] Por ISBN \n[3]Por Autor \n[4]Por Genero \n[5]Por Año de publicacion \n[6]Catalogo Completo \n[7] Volver al menú de consultas y reportajes \n "))
 
-                    if consulta == 3:
+                    if consulta == 7:
                         break
-                    if consulta == 1:
+                    if consulta == 1:#Por Titulo
                         try:
                             with sqlite3.connect("Biblioteca.db") as conn:
                                 mi_cursor = conn.cursor()
@@ -143,7 +143,7 @@ def consultas():
                                         print(titulo[0])
                                     print("*" * 35)
 
-                                buscar_titulo = input("¿Qué título quieres buscar? ")
+                                buscar_titulo = input("¿Qué título quieres consultar? ").upper()
                                 valores = {"titulo": buscar_titulo}
 
                                 datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, generos.GenNombre, Libros.añopublicacion, Libros.ISBN, Libros.Fechaadq \
@@ -174,54 +174,216 @@ def consultas():
                             print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
                         finally:
                             conn.close()
+
+
+                    if consulta == 2:#Por ISBN
+                        try:
+                            with sqlite3.connect("Biblioteca.db") as conn:
+                                mi_cursor = conn.cursor()
+
+                                mi_cursor.execute("SELECT ISBN FROM Libros")
+                                registros = mi_cursor.fetchall()
+
+                                if registros:
+                                    print("**********Lista de ISBN*********")
+                                    for isbn in registros:
+                                        print(isbn[0])
+                                    print("*" * 35)
+
+                                buscar_isbn = str(input("¿Qué ISBN quieres consultar? "))
+                                valores2 = {"isbn": buscar_isbn}
+
+                                datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, generos.GenNombre, Libros.añopublicacion, Libros.ISBN, Libros.Fechaadq \
+                                            FROM Libros \
+                                            JOIN autores ON Libros.autor = autores.clave \
+                                            JOIN generos ON Libros.genero = generos.clave \
+                                            WHERE Libros.ISBN = :isbn"
+
+                                mi_cursor.execute(datos, valores2)
+                                registros2 = mi_cursor.fetchall()
+
+                                if registros2:
+                                    print("**********Resultados de la búsqueda*********")
+                                    for fila in registros2:
+                                        print("Clave: ", fila[0])
+                                        print("Título: ", fila[1])
+                                        print("Autor: ", fila[2], fila[3])
+                                        print("Género: ", fila[4])
+                                        print("Año de publicacion: ", fila[5])
+                                        print("ISBN: ", fila[6])
+                                        print("Fecha en la que se adquirio: ", fila[7])
+                                else:
+                                    print("No se encontró el libro")
+
+                        except Error as e:
+                            print(e)
+                        except Exception:
+                            print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+                        finally:
+                            conn.close()
+
+
+                    if consulta == 3:#Por Autor
+                        try:
+                            with sqlite3.connect("Biblioteca.db") as conn:
+                                mi_cursor = conn.cursor()
+
+                                mi_cursor.execute("SELECT clave, AutNombre, AutApellidos FROM autores")
+                                registros = mi_cursor.fetchall()
+
+                                if registros:
+                                    print("**********Lista de Autores*********")
+                                    for clave,autnombre,autapellidos in registros:
+                                        print("Clave/Nombre/Apelido")
+                                        print(clave,autnombre,autapellidos)
+                                    print("*" * 35)
+
+                                buscar_autor = int(input("¿Qué Autor quieres consultar? (Escoge la clave correspondiente) "))
+                                valores2 = {"autor": buscar_autor}
+
+                                datos = "SELECT Libros.clave, Libros.titulo, Libros.añopublicacion, autores.AutNombre, autores.AutApellidos \
+                                            FROM Libros \
+                                            JOIN autores ON Libros.autor = autores.clave \
+                                            JOIN generos ON Libros.genero = generos.clave \
+                                            WHERE autores.clave = :autor"
+
+                                mi_cursor.execute(datos, valores2)
+                                registros3 = mi_cursor.fetchall()
+
+                                if registros3:
+                                    print("**********Resultados de la búsqueda*********")
+                                    print("Titulo/Fecha de publicacion")
+                                    for fila in registros3:
+                                        print(f"{fila[1]}, | {fila[2]}")
+                                    print("*" * 35)
+                                else:
+                                    print("No se encontró el libro")
+
+                        except Error as e:
+                            print(e)
+                        except Exception:
+                            print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+                        finally:
+                            conn.close()
+                    if consulta == 4:#Por Genero
+                        try:
+                            with sqlite3.connect("Biblioteca.db") as conn:
+                                mi_cursor = conn.cursor()
+
+                                mi_cursor.execute("SELECT clave, GenNombre FROM generos")
+                                registros = mi_cursor.fetchall()
+
+                                if registros:
+                                    print("**********Lista de Generos*********")
+                                    print("Clave/Nombre del genero")
+                                    for clave,GenNombre in registros:
+                                        print(clave,GenNombre)
+                                    print("*" * 35)
+
+                                buscar_autor = int(input("¿Qué Genero quieres consultar? (Escoge la clave correspondiente) "))
+                                valores2 = {"genero": buscar_autor}
+
+                                datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, Libros.añopublicacion \
+                                            FROM Libros \
+                                            JOIN autores ON Libros.autor = autores.clave \
+                                            JOIN generos ON Libros.genero = generos.clave \
+                                            WHERE generos.clave = :genero"
+
+                                mi_cursor.execute(datos, valores2)
+                                registros3 = mi_cursor.fetchall()
+
+                                if registros3:
+                                    print("**********Resultados de la búsqueda*********")
+                                    print("Clave/Titulo/Nombre del autor/Apellido del autor/Fecha de publicacion")
+                                    for fila in registros3:
+                                        print(f"{fila[0]} {fila[1]} {fila[2]} {fila[3]} {fila[4]}")
+                                else:
+                                    print("No se encontró el libro")
+
+                        except Error as e:
+                            print(e)
+                        except Exception:
+                            print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+                        finally:
+                            conn.close()
+                    if consulta == 5:#Por año de publicacion
+                        try:
+                            with sqlite3.connect("Biblioteca.db") as conn:
+                                mi_cursor = conn.cursor()
+                                buscar_fecha = input("¿Qué fecha quieres consultar? ")
+                                fechaprocesada = datetime.datetime.strptime(buscar_fecha, "%Y").date()
+                                valores = {"fecha": fechaprocesada}
+
+                                datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, generos.GenNombre, Libros.añopublicacion, Libros.ISBN, Libros.Fechaadq \
+                                        FROM Libros \
+                                        JOIN autores ON Libros.autor = autores.clave \
+                                        JOIN generos ON Libros.genero = generos.clave \
+                                        WHERE Libros.añopublicacion = :fecha"
+
+                                mi_cursor.execute(datos, valores)
+                                registros2 = mi_cursor.fetchall()
+
+                                if registros2:
+                                    print("**********Resultados de la búsqueda*********")
+                                    print("Titulo/Nombre del autor/Apellido del autor/Genero/Año de publicacion/ISBN")
+                                    for fila in registros2:
+                                        print(f"{fila[1]} {fila[2]} {fila[3]} {fila[4]} {fila[5]} {fila[6]}")
+                                else:
+                                    print("No se encontró el libro")
+
+                        except Error as e:
+                            print(e)
+                        except Exception:
+                            print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+                        finally:
+                            conn.close()
+                    if consulta == 6:#Catalogo completo
+                        try:
+                            with sqlite3.connect("Biblioteca.db") as conn:
+                                mi_cursor = conn.cursor()
+                                registros = mi_cursor.fetchall()
+
+                                print("DEBUG 1")
+
+                                datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, generos.GenNombre, Libros.añopublicacion, Libros.ISBN, Libros.Fechaadq \
+                                        FROM Libros \
+                                        JOIN autores ON Libros.autor = autores.clave \
+                                        JOIN generos ON Libros.genero = generos.clave"
+
+                                mi_cursor.execute(datos)
+                                registros2 = mi_cursor.fetchall()
+
+                                print("DEBUG2")
+
+                                if registros2:
+                                    print("DEBUG 3")
+                                    print("**********Resultados de la búsqueda*********")
+                                    print("Titulo/Nombre del autor/Apellido del autor/Genero/Año de publicacion/ISBN/Fecha de Adquisicion")
+                                    for fila in registros2:
+                                        print(f"{fila[1]} || {fila[2]} {fila[3]} || {fila[4]} || {fila[5]} || {fila[6]} || {fila[7]} ")
+                                else:
+                                    print("No se encontró el libro")
+
+                        except Error as e:
+                            print(e)
+                        except Exception:
+                            print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+                        finally:
+                            conn.close()
+
+            if sub_menu == 2:
+                pass
+
+
+
         except Error as e:
             print(e)
         except Exception:
             print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
 
-            if sub_menu == 2:
-                try:
-                    with sqlite3.connect("test2.db") as conn:
-                        mi_cursor = conn.cursor()
-
-                        mi_cursor.execute("SELECT ISBN FROM Libros")
-                        registros = mi_cursor.fetchall()
-
-                        if registros:
-                            print("**********Lista de ISBN*********")
-                            for isbn in registros:
-                                print(isbn[0])
-                            print("*" * 35)
-
-                        buscar_isbn = input("¿Qué título quieres buscar? ")
-                        valores2 = {"isbn": buscar_isbn}
-
-                        datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, generos.GenNombre, Libros.añopublicacion, Libros.ISBN, Libros.Fechaadq \
-                                    FROM Libros \
-                                    JOIN autores ON Libros.autor = autores.clave \
-                                    JOIN generos ON Libros.genero = generos.clave \
-                                    WHERE Libros.ISBN = :isbn"
-
-                        mi_cursor.execute(datos, valores2)
-                        registros2 = mi_cursor.fetchall()
-
-                        if registros2:
-                            print("**********Resultados de la búsqueda*********")
-                            for fila in registros2:
-                                print("Clave: ", fila[0])
-                                print("Título: ", fila[1])
-                                print("Autor: ", fila[2], fila[3])
-                                print("Género: ", fila[4])
-                                print("Año de publicacion: ", fila[5])
-                                print("ISBN: ", fila[6])
-                                print("Fecha en la que se adquirio: ", fila[7])
-                        else:
-                            print("No se encontró el libro")
-
-                except Error as e:
-                    print(e)
-                except Exception:
-                    print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+                    
+                
+            
 
 
 def GuardarArchivo():
