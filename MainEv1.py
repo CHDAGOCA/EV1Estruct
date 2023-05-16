@@ -125,7 +125,7 @@ def consultas():
                 break
             if sub_menu == 1:
                 while True:
-                    consulta = int(input("Consulta de Título \n ¿Qué acción deseas realizar? \n[1] Por título \n[2] Por ISBN \n[3] Volver al menú de consultas y reportajes \n"))
+                    consulta = int(input("Consulta de Título \n ¿Qué acción deseas realizar? \n[1] - Por título \n[2] - Por ISBN \n[3] - Volver al menú de consultas y reportajes \n"))
 
                     if consulta == 3:
                         break
@@ -143,7 +143,7 @@ def consultas():
                                         print(titulo[0])
                                     print("*" * 35)
 
-                                buscar_titulo = input("¿Qué título quieres buscar? ")
+                                buscar_titulo = input("¿Qué título quieres buscar? ").upper()
                                 valores = {"titulo": buscar_titulo}
 
                                 datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, generos.GenNombre, Libros.añopublicacion, Libros.ISBN, Libros.Fechaadq \
@@ -174,54 +174,98 @@ def consultas():
                             print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
                         finally:
                             conn.close()
+
+                    if consulta == 2:
+                        try:
+                            with sqlite3.connect("Biblioteca.db") as conn:
+                                mi_cursor = conn.cursor()
+
+                                mi_cursor.execute("SELECT ISBN FROM Libros")
+                                registros = mi_cursor.fetchall()
+
+                                if registros:
+                                    print("**********Lista de ISBN*********")
+                                    for isbn in registros:
+                                        print(isbn[0])
+                                    print("*" * 35)
+
+                                buscar_isbn = input("¿Qué ISBN es el que quieres buscar? ")
+                                valores2 = {"isbn": buscar_isbn}
+
+                                datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, generos.GenNombre, Libros.añopublicacion, Libros.ISBN, Libros.Fechaadq \
+                                            FROM Libros \
+                                            JOIN autores ON Libros.autor = autores.clave \
+                                            JOIN generos ON Libros.genero = generos.clave \
+                                            WHERE Libros.ISBN = :isbn"
+
+                                mi_cursor.execute(datos, valores2)
+                                registros2 = mi_cursor.fetchall()
+
+                                if registros2:
+                                    print("**********Resultados de la búsqueda*********")
+                                    for fila in registros2:
+                                        print("Clave: ", fila[0])
+                                        print("Título: ", fila[1])
+                                        print("Autor: ", fila[2], fila[3])
+                                        print("Género: ", fila[4])
+                                        print("Año de publicacion: ", fila[5])
+                                        print("ISBN: ", fila[6])
+                                        print("Fecha en la que se adquirio: ", fila[7])
+                                else:
+                                    print("No se encontró el libro")
+
+                        except Error as e:
+                            print(e)
+                        except Exception:
+                            print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+            if sub_menu == 2:
+                reportaje = int(input("Consulta de Título \n ¿Qué acción deseas realizar? \n[1] - Archivo Completo \n[2] - Por Autores \n [3] - Por genero\n[4] - Por Año de publicacion \n[5] - Volver al menú de consultas y reportajes \n"))
+                if reportaje == 5:
+                    break
+                elif reportaje == 1:
+                    pregunta = int(input("¿Como quieres el reportaje? \n[1] - CSV \n[2] - EXCEL\n "))
+                    if pregunta == 1:
+                        ExportArchComplt_csv()
+                        break
+                    elif pregunta == 2:
+                        ExportArchComplt_Excel()
+                        break
+                    else:
+                        print("La opcion ingresada no es correcta, elija de nuevo")
+                elif reportaje == 2:
+                    pregunta = int(input("¿Como quieres el reportaje por autor? \n[1] - CSV \n[2] - EXCEL\n "))
+                    if pregunta == 1:
+                        ExportArchAutores_csv(autorsearch)
+                        break
+                    elif pregunta == 2:
+                        ExportArchAutores_Excel(autorsearch)
+                        break
+                    else:
+                        print("La opcion ingresada no es correcta, elija de nuevo")
+                elif reportaje == 3:
+                    pregunta = int(input("¿Como quieres el reportaje por genero? \n[1] - CSV \n[2] - EXCEL\n "))
+                    if pregunta == 1:
+                        ExportArchGenero_csv(generosearch)
+                        break
+                    elif pregunta == 2:
+                        ExportArchGenero_Excel(generosearch)
+                        break
+                    else:
+                        print("La opcion ingresada no es correcta, elija de nuevo")
+                elif reportaje == 4:
+                    pregunta = int(input("¿Como quieres el reportaje por Año de Publicacion? \n[1] - CSV \n[2] - EXCEL\n "))
+                    if pregunta == 1:
+                        ExportArchAñoPublic_csv(añosearch)
+                        break
+                    elif pregunta == 2:
+                        ExportArchAñoPublic_Excel(añosearch)
+                        break
+                    else:
+                        print("La opcion ingresada no es correcta, elija de nuevo")    
         except Error as e:
             print(e)
         except Exception:
             print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
-
-            if sub_menu == 2:
-                try:
-                    with sqlite3.connect("test2.db") as conn:
-                        mi_cursor = conn.cursor()
-
-                        mi_cursor.execute("SELECT ISBN FROM Libros")
-                        registros = mi_cursor.fetchall()
-
-                        if registros:
-                            print("**********Lista de ISBN*********")
-                            for isbn in registros:
-                                print(isbn[0])
-                            print("*" * 35)
-
-                        buscar_isbn = input("¿Qué título quieres buscar? ")
-                        valores2 = {"isbn": buscar_isbn}
-
-                        datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, generos.GenNombre, Libros.añopublicacion, Libros.ISBN, Libros.Fechaadq \
-                                    FROM Libros \
-                                    JOIN autores ON Libros.autor = autores.clave \
-                                    JOIN generos ON Libros.genero = generos.clave \
-                                    WHERE Libros.ISBN = :isbn"
-
-                        mi_cursor.execute(datos, valores2)
-                        registros2 = mi_cursor.fetchall()
-
-                        if registros2:
-                            print("**********Resultados de la búsqueda*********")
-                            for fila in registros2:
-                                print("Clave: ", fila[0])
-                                print("Título: ", fila[1])
-                                print("Autor: ", fila[2], fila[3])
-                                print("Género: ", fila[4])
-                                print("Año de publicacion: ", fila[5])
-                                print("ISBN: ", fila[6])
-                                print("Fecha en la que se adquirio: ", fila[7])
-                        else:
-                            print("No se encontró el libro")
-
-                except Error as e:
-                    print(e)
-                except Exception:
-                    print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
 
 
 def GuardarArchivo():
@@ -276,15 +320,24 @@ def CrearTablas():
         #return registro_libro
 
 def ExportArchComplt_csv():
-    listareport=list(registro_libro.items())
-    nombrarch = "ReporteCompleto" + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")) + ".csv"
-    archivo4 = open(nombrarch,"w",newline="")
-    grabador1=csv.writer(archivo4)
-    grabador1.writerow(("Clave","Titulo","Autor","Genero","f_publicacion","fecha_adquisicion","isbn"))
-    grabador1.writerows([(clave,datos[0],datos[1],datos[2],datos[3],datos[4],datos[5]) for clave,datos in listareport])
-    archivo4.close
-    ruta = os.getcwd()
-    print("El archivo generado tiene por nombre ",nombrarch," y esta en la ruta ",ruta)
+    try:
+        listareport=list(registro_libro.items())
+        nombrarch = "ReporteCompleto" + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")) + ".csv"
+        archivo4 = open(nombrarch,"w",newline="")
+        grabador1=csv.writer(archivo4)
+        grabador1.writerow(("Clave","Titulo","Autor","Genero","f_publicacion","fecha_adquisicion","isbn"))
+        grabador1.writerows([(clave,datos[0],datos[1],datos[2],datos[3],datos[4],datos[5]) for clave,datos in listareport])
+        archivo4.close
+        ruta = os.getcwd()
+        print("El archivo generado tiene por nombre ",nombrarch," y esta en la ruta ",ruta)
+    except FileNotFoundError:
+        print("No hay registros previos en la bilbioteca")
+    except csv.Error as fallocsv:
+        print("Ocurrió un error inesperado y no se cargaron los registros")
+        registro_libro=dict()
+        return registro_libro
+    except Exception:
+        print("Deido a un error no se han podido cargar los registros.")
 
 def ExportArchAutores_csv(autorsearch):
     listareport=list(registro_libro.items())
@@ -770,8 +823,10 @@ while True:
     if start==False:
         registro_libro={}
         start=True
-    menu_principal=input("Bienvenido a la biblioteca universitaria\n ¿Que accion deseas realizar? \n[1]Registrar un nuevo ejemplar \n[2]Consultas y reportes \
-                         \n[3]Registrar un genero\n[4]Registrar un autor\n[5]Salir")
+    print("Bienvenido a la biblioteca universitaria")
+    print("[1] - Registrar un nuevo ejemplar \n[2] - Consultas y reportes \
+                         \n[3] - Registrar un genero\n[4] - Registrar un autor\n[5] - Salir")
+    menu_principal=input("¿Que accion deseas realizar? \n ")
     if menu_principal== "1":
         if HayAutores()==False and HayGeneros()==False:
             print("No hay autores, ni generos registrados por lo que no se pueden registrar libros.\nVolviendo a menu principal....")
