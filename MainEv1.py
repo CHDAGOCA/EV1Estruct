@@ -119,158 +119,110 @@ def registro():
                   print("El ISBN debe tener 13 caracteres numéricos. Vuelva a ingresarlo.")
 
 def consultas():
-        while True:
-            sub_menu=input("Consultas y Reportajes\n ¿Que accion deseas realizar? \n[1] Consulta por titulo \n[2] Reportajes \n[3] Volver al menú Principal \n")
-            sub_menu = sub_menu
-            listareport=list(registro_libro.items())
-            if sub_menu == "3":
+    while True:
+        try:
+            sub_menu=int(input("Consultas y Reportajes\n ¿Que accion deseas realizar? \n[1] Consulta por titulo \n[2] Reportajes \n[3] Volver al menú Principal \n"))
+        
+            if sub_menu == 3:
                 break
-            if sub_menu == "1":
+            if sub_menu == 1:
                 while True:
-                    consulta_titulo=input("Consulta de Titulo \n ¿Que accion deseas realizar? \n[1] Por titulo \n[2] Por ISBN \n[3] Volver al menú de consultas y reportajes \n")
-                    consulta_titulo = consulta_titulo
-                    if consulta_titulo == "3":
+                    consulta = int(input("Consulta de Título \n ¿Qué acción deseas realizar? \n[1] Por título \n[2] Por ISBN \n[3] Volver al menú de consultas y reportajes \n"))
+
+                    if consulta == 3:
                         break
-                    elif consulta_titulo == "1":
-                        found=False
-                        if listareport:
-                            print("Lista de Titulos registrados:")
-                            for key,value in listareport:
-                                print(value[0])
-                        titulo= input("Ingresa el titulo del libro a buscar: ")
-                        regisitems=(list(registro_libro.items()))
-                        tituloMayus= titulo.upper()
-                        for key,value in regisitems:
-                            if value[0]==tituloMayus:
-                                found=True
-                                print("Folio: ",key,"\nTitulo: ",registro_libro[key][0],"\nAutor: ",registro_libro[key][1],"\nGenero: ",registro_libro[key][2],"\nAño de Publicación: ",registro_libro[key][3],"\nFecha_Adquisicion: ",registro_libro[key][4],"\nISBN: ",registro_libro[key][5])
-                        if found==False:
-                            print("No se encontraron libros con el titulo ", tituloMayus)
-                            
-                    elif consulta_titulo == "2":
-                        found=False
-                        isbn= input("Ingresa el isbn del libro a buscar: ")
-                        regisitems=(list(registro_libro.items()))
-                        for key,value in regisitems:
-                            if value[5]==isbn:
-                                found=True
-                                print("Folio: ",key,"\nTitulo: ",registro_libro[key][0],"\nAutor: ",registro_libro[key][1],"\nGenero: ",registro_libro[key][2],"\nAño de Publicación: ",registro_libro[key][3],"\nFecha_Adquisicion: ",registro_libro[key][4],"\nISBN: ",registro_libro[key][5])
-                        if found==False:
-                            print("No se encontraron titulos con el ISBN ",isbn)
-                    else:
-                        print("La opcion ingresada no es correcta, elija de nuevo") 
-            if sub_menu == "2":
-                while True:
-                    reportajes = input("Reportajes \n ¿Que accion deseas realizar? \n[1] Catalogo Completo \n[2] Reportaje por autor \n[3] Reportaje por genero \n[4] Por año de publicacion \n[5] volver al menu de reportaje \n")
-                    listareport=list(registro_libro.items())
-                    if reportajes=="1":
-                        if listareport:
-                            print(f"Folio \t Titulo \t\t Autor \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
-                            print("*"*100)
-                            for Clave,valor in listareport:
-                                print(f'{Clave:4} \t  {valor[0]:15} \t {valor[1]:15} \t {valor[2]:10} \t {valor[3]:5} \t\t {valor[4]:5} \t {valor[5]:15} ')
-                            print("*"*100)
-                            descarga = input("¿Exportar este reporte? \n[1] Exportar el reportaje en CSV \n[2] Exportar el reportaje en Excel \n[3] No exportar el reporte \n")
-                            if descarga=="1":
-                                ExportArchComplt_csv()
-                            elif descarga=="2":
-                                ExportArchComplt_Excel()
-                            else:
-                                print("Reporte no exportado. \n Volviendo a menu....")
-                        else:
-                            print("No se han registrado libros.")
-                    elif reportajes=="2":
-                        foundautor=False
-                        if listareport:
-                            print("Lista de autores registrados:")
-                            for key,value in listareport:
-                                print(value[1])
-                        autorsel = input("Favor de introducir el autor: ")
-                        mayusautorsel=autorsel.upper()
-                        if listareport:
-                            print(f"Folio \t Titulo \t\t Autor \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
-                            print("*"*100)
-                            for key,value in listareport:
-                                if value[1]==mayusautorsel:
-                                    foundautor=True
-                                    print(f'{key:4} \t  {value[0]:15} \t {value[1]:15} \t {value[2]:10} \t {value[3]:5} \t\t {value[4]:5} \t {value[5]:15}')
-                            print("*"*100)
-                            if foundautor==False:
-                                print("No hay libros registrados de este autor")
-                                print("*"*100)
-                            else:
-                                descarga = input("¿Exportar este reporte? \n[1] Exportar el reportaje en CSV \n[2] Exportar el reportaje en Excel \n[3] No exportar el reporte \n")
-                                if descarga=="1":
-                                    ExportArchAutores_csv(mayusautorsel)
-                                elif descarga=="2":
-                                    ExportArchAutores_Excel(mayusautorsel)
-                                else:
-                                    print("Reporte no exportado. \n Volviendo a menu....")
-                        else:
-                            print("No se han registrado libros por lo que no hay libros de este autor.")
-                    elif reportajes=="3":
-                        foundgen=False
-                        if listareport:
-                            print("Lista de generos registrados:")
-                            for key,value in listareport:
-                                print(value[2])
-                        generosel = input("Favor de introducir el genero:   ")
-                        mayusgenerosel=generosel.upper()
-                        if listareport:
-                            print(f"Folio \t Titulo \t\t Autor \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
-                            print("*"*100)
-                            for key,value in listareport:
-                                if value[2]==mayusgenerosel:
-                                    foundgen=True
-                                    print(f'{key:4} \t  {value[0]:15} \t {value[1]:15} \t {value[2]:10} \t {value[3]:5} \t\t {value[4]:5} \t {value[5]:15}')
-                            print("*"*100)
-                            if foundgen==False:
-                                print("No hay libros registrados de este genero")
-                                print("*"*100)
-                            else:
-                                descarga = input("¿Exportar este reporte? \n[1] Exportar el reportaje en CSV \n[2] Exportar el reportaje en Excel \n[3] No exportar el reporte \n")
-                                if descarga=="1":
-                                    ExportArchGenero_csv(mayusgenerosel)
-                                elif descarga=="2":
-                                    ExportArchGenero_Excel(mayusgenerosel)
-                                else:
-                                    print("Reporte no exportado. \n Volviendo a menu....")
-                        else:
-                            print("No se han registrado libros por lo que no hay libros de este genero.")
+                    if consulta == 1:
+                        try:
+                            with sqlite3.connect("Biblioteca.db") as conn:
+                                mi_cursor = conn.cursor()
 
-                    elif reportajes=="4":
-                        foundyear=False
-                        añosel = input("Favor de introducir el año: ")
-                        mayusañosel=añosel.upper()
-                        if listareport:
-                            print(f"Folio \t Titulo \t\t Autor \t\t\t Genero \t Año_Public \t Fecha_Adq \t ISBN")
-                            print("*"*100)
-                            for key,value in listareport:
-                                if value[3]==mayusañosel:
-                                    foundyear=True
-                                    print(f'{key:4} \t  {value[0]:15} \t {value[1]:15} \t {value[2]:10} \t {value[3]:5} \t\t {value[4]:5} \t {value[5]:15}')
-                            print("*"*100)
-                            if foundyear==False:
-                                print("No hay libros registrados de este año de publicación")
-                                print("*"*100)
-                            else:
-                                descarga = input("¿Exportar este reporte? \n[1] Exportar el reportaje en CSV \n[2] Exportar el reportaje en Excel \n[3] No exportar el reporte \n")
-                                if descarga=="1":
-                                    ExportArchAñoPublic_csv(mayusañosel)
-                                elif descarga=="2":
-                                    ExportArchAñoPublic_Excel(mayusañosel)
+                                mi_cursor.execute("SELECT titulo FROM Libros")
+                                registros = mi_cursor.fetchall()
+
+                                if registros:
+                                    print("**********Lista de Títulos*********")
+                                    for titulo in registros:
+                                        print(titulo[0])
+
+                                buscar_titulo = input("¿Qué título quieres buscar? ")
+                                valores = {"titulo": buscar_titulo}
+
+                                datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, generos.GenNombre, Libros.añopublicacion, Libros.ISBN, Libros.Fechaadq \
+                                        FROM Libros \
+                                        JOIN autores ON Libros.autor = autores.clave \
+                                        JOIN generos ON Libros.genero = generos.clave \
+                                        WHERE Libros.titulo = :titulo"
+
+                                mi_cursor.execute(datos, valores)
+                                registros2 = mi_cursor.fetchall()
+
+                                if registros2:
+                                    print("**********Resultados de la búsqueda*********")
+                                    for fila in registros2:
+                                        print("Clave: ", fila[0])
+                                        print("Título: ", fila[1])
+                                        print("Autor: ", fila[2], fila[3])
+                                        print("Género: ", fila[4])
+                                        print("Año de publicacion: ", fila[5])
+                                        print("ISBN: ", fila[6])
+                                        print("Fecha en la que se adquirio: ", fila[7])
                                 else:
-                                    print("Reporte no exportado. \n Volviendo a menu....")
+                                    print("No se encontró el libro")
+
+                        except Error as e:
+                            print(e)
+                        except Exception:
+                            print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+                        finally:
+                            conn.close()
+        except Error as e:
+            print(e)
+        except Exception:
+            print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+
+            if sub_menu == 2:
+                try:
+                    with sqlite3.connect("test2.db") as conn:
+                        mi_cursor = conn.cursor()
+
+                        mi_cursor.execute("SELECT ISBN FROM Libros")
+                        registros = mi_cursor.fetchall()
+
+                        if registros:
+                            print("**********Lista de ISBN*********")
+                            for isbn in registros:
+                                print(isbn[0])
+
+                        buscar_isbn = input("¿Qué título quieres buscar? ")
+                        valores2 = {"isbn": buscar_isbn}
+
+                        datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, generos.GenNombre, Libros.añopublicacion, Libros.ISBN, Libros.Fechaadq \
+                                    FROM Libros \
+                                    JOIN autores ON Libros.autor = autores.clave \
+                                    JOIN generos ON Libros.genero = generos.clave \
+                                    WHERE Libros.ISBN = :isbn"
+
+                        mi_cursor.execute(datos, valores2)
+                        registros2 = mi_cursor.fetchall()
+
+                        if registros2:
+                            print("**********Resultados de la búsqueda*********")
+                            for fila in registros2:
+                                print("Clave: ", fila[0])
+                                print("Título: ", fila[1])
+                                print("Autor: ", fila[2], fila[3])
+                                print("Género: ", fila[4])
+                                print("Año de publicacion: ", fila[5])
+                                print("ISBN: ", fila[6])
+                                print("Fecha en la que se adquirio: ", fila[7])
                         else:
-                            print("No se han registrado libros por lo que no hay libros con este año de publicación.")
+                            print("No se encontró el libro")
 
-                    elif reportajes=="5":
-                        break
-                    else:
-                        print("Favor de ingresar una respuesta aceptable.")
+                except Error as e:
+                    print(e)
+                except Exception:
+                    print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
 
-            else:
-                print("La opcion ingresada no es correcta, elija de nuevo")
 
 def GuardarArchivo():
     listareport=list(registro_libro.items())
