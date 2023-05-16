@@ -190,7 +190,12 @@ def consultas():
                                         print(isbn[0])
                                     print("*" * 35)
 
-                                buscar_isbn = str(input("¿Qué ISBN quieres consultar? "))
+                                while True:
+                                    buscar_isbn=input(str(f"Ingresa la clave de ISBN del libro "))
+                                    if len(buscar_isbn) == 13 and (bool(re.match("^[0-9]{13}$", buscar_isbn))):
+                                        break
+                                    else:
+                                        print("El ISBN debe tener 13 caracteres numericos, vuelva a ingresarlos ")
                                 valores2 = {"isbn": buscar_isbn}
 
                                 datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, generos.GenNombre, Libros.añopublicacion, Libros.ISBN, Libros.Fechaadq \
@@ -237,15 +242,22 @@ def consultas():
                                         print("Clave/Nombre/Apelido")
                                         print(clave,autnombre,autapellidos)
                                     print("*" * 35)
-
-                                buscar_autor = int(input("¿Qué Autor quieres consultar? (Escoge la clave correspondiente) "))
-                                valores2 = {"autor": buscar_autor}
+                                while True:
+                                    buscar_autor=input(f"Ingrese el nombre completo del autor ")
+                                    if buscar_autor.strip() == '':
+                                        print("El autor del libro es un campo obligatorio")
+                                    elif ChecarAut(buscar_autor)==False:
+                                        print("\nAutor no registrado en base de datos.")
+                                        continue
+                                    else: 
+                                        break
+                                valores2 = {"autor": buscar_autor.upper()}
 
                                 datos = "SELECT Libros.clave, Libros.titulo, Libros.añopublicacion, autores.AutNombre, autores.AutApellidos \
                                             FROM Libros \
                                             JOIN autores ON Libros.autor = autores.clave \
                                             JOIN generos ON Libros.genero = generos.clave \
-                                            WHERE autores.clave = :autor"
+                                            WHERE (autores.AutNombre||' '||autores.AutApellidos) = :autor"
 
                                 mi_cursor.execute(datos, valores2)
                                 registros3 = mi_cursor.fetchall()
@@ -280,14 +292,22 @@ def consultas():
                                         print(clave,GenNombre)
                                     print("*" * 35)
 
-                                buscar_autor = int(input("¿Qué Genero quieres consultar? (Escoge la clave correspondiente) "))
-                                valores2 = {"genero": buscar_autor}
+                                while True:
+                                    buscar_autor=input(f"Ingrese el genero al que pertenece ")
+                                    if buscar_autor.strip() == '':
+                                        print("El genero del libro es un campo obligatorio")
+                                    elif ChecarGen(buscar_autor)==False:
+                                        print("\nGenero no registrado en base de datos.")
+                                        continue
+                                    else: 
+                                        break
+                                valores2 = {"genero": buscar_autor.upper()}
 
                                 datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, Libros.añopublicacion \
                                             FROM Libros \
                                             JOIN autores ON Libros.autor = autores.clave \
                                             JOIN generos ON Libros.genero = generos.clave \
-                                            WHERE generos.clave = :genero"
+                                            WHERE generos.GenNombre = :genero"
 
                                 mi_cursor.execute(datos, valores2)
                                 registros3 = mi_cursor.fetchall()
@@ -310,7 +330,13 @@ def consultas():
                         try:
                             with sqlite3.connect("Biblioteca.db") as conn:
                                 mi_cursor = conn.cursor()
-                                buscar_fecha = input("¿Qué fecha quieres consultar? ")
+                                while True:
+                                    buscar_fecha=input(f"Ingrese el año de publicación del libro (YYYY) ")
+                                    if (not bool(re.match("^[0-9]{4}$", buscar_fecha))):
+                                        print("\nEl año de publicación del libro solo pueden ser 4 caracteres númericos.")
+                                        continue
+                                    else:
+                                        break
                                 fechaprocesada = datetime.datetime.strptime(buscar_fecha, "%Y").date()
                                 valores = {"fecha": fechaprocesada}
 
@@ -920,6 +946,220 @@ def Obt_CL_Gen(gensearch):
     finally:
         conn.close()
         return recover   
+
+def GenArch_CatAut_CSV(search):
+    nombrarch = "ReporteAutor" + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")) + ".csv"
+    archivo4 = open(nombrarch,"w",newline="")
+    grabador1=csv.writer(archivo4)
+    grabador1.writerow(("Clave","Titulo","Autor","Genero","f_publicacion","fecha_adquisicion","isbn"))
+    try:
+        with sqlite3.connect("Biblioteca.db") as conn:
+            mi_cursor = conn.cursor()
+
+            mi_cursor.execute("SELECT titulo FROM Libros")
+
+            valores = {"titulo": search.upper()}
+
+            datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, generos.GenNombre, Libros.añopublicacion, Libros.ISBN, Libros.Fechaadq \
+                    FROM Libros \
+                    JOIN autores ON Libros.autor = autores.clave \
+                    JOIN generos ON Libros.genero = generos.clave \
+                    WHERE (autores.AutNombre||' '||autores.AutApellidos) = :titulo"
+
+            mi_cursor.execute(datos, valores)
+            registros2 = mi_cursor.fetchall()
+            
+            if registros2:
+                print("**********Resultados de la búsqueda*********")
+                for fila in registros2:
+                    NomAutComp=fila[2]+' '+fila[3]
+                    grabador1.writerows([(str(fila[0]),fila[1],NomAutComp,fila[4],fila[5],fila[7],fila[6])])
+                    print("Clave: ", fila[0])
+                    print("Título: ", fila[1])
+                    print("Autor: ", fila[2], fila[3])
+                    print("Género: ", fila[4])
+                    print("Año de publicacion: ", fila[5])
+                    print("ISBN: ", fila[6])
+                    print("Fecha en la que se adquirio: ", fila[7])
+            else:
+                print("No se encontraron libros.")
+    except Error as e:
+        print(e)
+    except Exception:
+        print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+    finally:
+        archivo4.close
+        ruta = os.getcwd()
+        print("El archivo generado tiene por nombre ",nombrarch," y esta en la ruta ",ruta)
+        conn.close()
+
+def GenArch_CatComp_CSV(search):
+    nombrarch = "ReporteCompleto" + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")) + ".csv"
+    archivo4 = open(nombrarch,"w",newline="")
+    grabador1=csv.writer(archivo4)
+    grabador1.writerow(("Clave","Titulo","Autor","Genero","f_publicacion","fecha_adquisicion","isbn"))
+    try:
+        with sqlite3.connect("Biblioteca.db") as conn:
+            mi_cursor = conn.cursor()
+
+            mi_cursor.execute("SELECT titulo FROM Libros")
+
+            valores = {"titulo": search.upper()}
+
+            datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, generos.GenNombre, Libros.añopublicacion, Libros.ISBN, Libros.Fechaadq \
+                    FROM Libros \
+                    JOIN autores ON Libros.autor = autores.clave \
+                    JOIN generos ON Libros.genero = generos.clave"
+
+            mi_cursor.execute(datos)
+            registros2 = mi_cursor.fetchall()
+            
+            if registros2:
+                print("**********Resultados de la búsqueda*********")
+                for fila in registros2:
+                    NomAutComp=fila[2]+' '+fila[3]
+                    grabador1.writerows([(str(fila[0]),fila[1],NomAutComp,fila[4],fila[5],fila[7],fila[6])])
+                    print("Clave: ", fila[0])
+                    print("Título: ", fila[1])
+                    print("Autor: ", fila[2], fila[3])
+                    print("Género: ", fila[4])
+                    print("Año de publicacion: ", fila[5])
+                    print("ISBN: ", fila[6])
+                    print("Fecha en la que se adquirio: ", fila[7])
+            else:
+                print("No se encontraron libros.")
+    except Error as e:
+        print(e)
+    except Exception:
+        print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+    finally:
+        archivo4.close
+        ruta = os.getcwd()
+        print("El archivo generado tiene por nombre ",nombrarch," y esta en la ruta ",ruta)
+        conn.close()
+
+def GenArch_CatAut_Excel(search):
+    ruta = os.getcwd()
+    archname = "ReporteCatalogoAutor" + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")) + ".xlsx"
+    libro = openpyxl.Workbook()
+    libro.iso_dates = True 
+    hoja = libro["Sheet"] 
+    hoja.title = "Reporte de Catalogo completo"
+    hoja["B1"].value ="Folio"
+    hoja["C1"].value ="Titulo"
+    hoja["D1"].value ="Autor"
+    hoja["E1"].value ="Genero"
+    hoja["F1"].value ="Año de Publicación"
+    hoja["G1"].value ="Fecha de Adquisición"
+    hoja["H1"].value ="ISBN"
+    try:
+        with sqlite3.connect("Biblioteca.db") as conn:
+            mi_cursor = conn.cursor()
+
+            mi_cursor.execute("SELECT titulo FROM Libros")
+
+            valores = {"titulo": search.upper()}
+
+            datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, generos.GenNombre, Libros.añopublicacion, Libros.ISBN, Libros.Fechaadq \
+                    FROM Libros \
+                    JOIN autores ON Libros.autor = autores.clave \
+                    JOIN generos ON Libros.genero = generos.clave \
+                    WHERE (autores.AutNombre||' '||autores.AutApellidos) = :titulo"
+
+            mi_cursor.execute(datos, valores)
+            registros2 = mi_cursor.fetchall()
+            
+            if registros2:
+                print("**********Resultados de la búsqueda*********")
+                i=0
+                for fila in registros2:
+                    i=i+1
+                    NomAutComp=fila[2]+' '+fila[3]
+                    hoja.cell(row=i+1, column=2).value = str(fila[0])
+                    hoja.cell(row=i+1, column=3).value = fila[1]
+                    hoja.cell(row=i+1, column=4).value = NomAutComp
+                    hoja.cell(row=i+1, column=5).value = fila[4]
+                    hoja.cell(row=i+1, column=6).value = fila[5]
+                    hoja.cell(row=i+1, column=7).value = fila[7]
+                    hoja.cell(row=i+1, column=8).value = fila[6]
+                    print("Clave: ", fila[0])
+                    print("Título: ", fila[1])
+                    print("Autor: ", fila[2], fila[3])
+                    print("Género: ", fila[4])
+                    print("Año de publicacion: ", fila[5])
+                    print("ISBN: ", fila[6])
+                    print("Fecha en la que se adquirio: ", fila[7])
+            else:
+                print("No se encontraron libros.")
+    except Error as e:
+        print(e)
+    except Exception:
+        print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+    finally:
+        libro.save(archname)
+        print("El reporte ", archname ," fue creado exitosamente y esta en ",ruta)
+        conn.close()
+
+def GenArch_CatComp_Excel(search):
+    ruta = os.getcwd()
+    archname = "ReporteCatalogoCompleto" + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")) + ".xlsx"
+    libro = openpyxl.Workbook()
+    libro.iso_dates = True 
+    hoja = libro["Sheet"] 
+    hoja.title = "Reporte de Catalogo completo"
+    hoja["B1"].value ="Folio"
+    hoja["C1"].value ="Titulo"
+    hoja["D1"].value ="Autor"
+    hoja["E1"].value ="Genero"
+    hoja["F1"].value ="Año de Publicación"
+    hoja["G1"].value ="Fecha de Adquisición"
+    hoja["H1"].value ="ISBN"
+    try:
+        with sqlite3.connect("Biblioteca.db") as conn:
+            mi_cursor = conn.cursor()
+
+            mi_cursor.execute("SELECT titulo FROM Libros")
+
+            valores = {"titulo": search.upper()}
+
+            datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, generos.GenNombre, Libros.añopublicacion, Libros.ISBN, Libros.Fechaadq \
+                    FROM Libros \
+                    JOIN autores ON Libros.autor = autores.clave \
+                    JOIN generos ON Libros.genero = generos.clave"
+
+            mi_cursor.execute(datos)
+            registros2 = mi_cursor.fetchall()
+            
+            if registros2:
+                print("**********Resultados de la búsqueda*********")
+                i=0
+                for fila in registros2:
+                    i=i+1
+                    NomAutComp=fila[2]+' '+fila[3]
+                    hoja.cell(row=i+1, column=2).value = str(fila[0])
+                    hoja.cell(row=i+1, column=3).value = fila[1]
+                    hoja.cell(row=i+1, column=4).value = NomAutComp
+                    hoja.cell(row=i+1, column=5).value = fila[4]
+                    hoja.cell(row=i+1, column=6).value = fila[5]
+                    hoja.cell(row=i+1, column=7).value = fila[7]
+                    hoja.cell(row=i+1, column=8).value = fila[6]
+                    print("Clave: ", fila[0])
+                    print("Título: ", fila[1])
+                    print("Autor: ", fila[2], fila[3])
+                    print("Género: ", fila[4])
+                    print("Año de publicacion: ", fila[5])
+                    print("ISBN: ", fila[6])
+                    print("Fecha en la que se adquirio: ", fila[7])
+            else:
+                print("No se encontraron libros.")
+    except Error as e:
+        print(e)
+    except Exception:
+        print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+    finally:
+        libro.save(archname)
+        print("El reporte ", archname ," fue creado exitosamente y esta en ",ruta)
+        conn.close()
 
 CrearTablas()
 while True:
