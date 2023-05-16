@@ -374,16 +374,10 @@ def consultas():
             if sub_menu == 2:
                 pass
 
-
-
         except Error as e:
             print(e)
         except Exception:
             print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
-
-                    
-                
-            
 
 
 def GuardarArchivo():
