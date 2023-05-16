@@ -1,4 +1,4 @@
-from datetime import date, datetime
+import datetime
 import re
 import csv
 import os
@@ -9,114 +9,112 @@ import os.path
 from sqlite3 import Error
 start=False
 
-def conectar_db():
-    conexion = None
-    try:
-        conexion = sqlite3.connect("biblioteca.db")
-        cursor = conexion.cursor()
-        return conexion, cursor
-    except sqlite3.Error as error:
-        print("Error al conectar a la base de datos:", error)
-        if conexion:
-            conexion.close()
-        return None, None
-
-def cerrar_db(conexion):
-    if conexion:
-        conexion.close()
-
-def obtener_autores(cursor):
-    cursor.execute("SELECT nombre FROM autores")
-    autores = [autor[0] for autor in cursor.fetchall()]
-    return autores
-
-def obtener_generos(cursor):
-    cursor.execute("SELECT nombre FROM generos")
-    generos = [genero[0] for genero in cursor.fetchall()]
-    return generos
-
-def guardar_libro(cursor, titulo, autor, genero, publicacion, dia, mes, anio, isbn):
-    try:
-        cursor.execute("INSERT INTO libros (titulo, autor, genero, publicacion, dia_adquisicion, mes_adquisicion, anio_adquisicion, isbn) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                       (titulo, autor, genero, publicacion, dia, mes, anio, isbn))
-        conexion.commit()
-        print("El libro se ha registrado exitosamente en la base de datos.")
-    except sqlite3.Error as error:
-        print("Error al guardar el libro en la base de datos:", error)
-
 def registro():
     print("-" * 40)
     print("Registro de libro")
     print("-" * 40)
-
-    conexion, cursor = conectar_db()
-    if not conexion or not cursor:
-        return
-
-    autores = obtener_autores(cursor)
-    generos = obtener_generos(cursor)
-
     while True:
-        titulo = input("Ingresa el título del libro a registrar: ")
-        if titulo.strip() == '':
-            print("El título es un campo obligatorio.")
-            continue
+            while True:
+                    while True: 
+                        titulo=input("Ingresa el titulo del libro a registrar ")
+                        if titulo.strip() == '': 
+                            print("El titulo es un campo obligatorio ")
+                        else: 
+                            break
+                            
+                    while True:
+                        ConsultaLibro_TAG(0,1,0)
+                        autor=input(f"Ingrese el autor de {titulo} ")
+                        if autor.strip() == '':
+                            print("El autor del libro es un campo obligatorio")
+                        elif ChecarAut(autor)==False:
+                            print("\nAutor no registrado en base de datos.")
+                            continue
+                        else: 
+                            break
 
-        autor = input(f"Ingrese el autor de '{titulo}': ")
-        if autor.strip() == '':
-            print("El autor del libro es un campo obligatorio.")
-            continue
-        elif autor not in autores:
-            print("El autor no está registrado. Por favor, elija uno de los autores existentes.")
-            continue
+                    while True:
+                        ConsultaLibro_TAG(0,0,1)
+                        genero=input(f"Ingrese el genero al que pertenece ")
+                        if genero.strip() == '':
+                            print("El genero del libro es un campo obligatorio")
+                        elif ChecarGen(genero)==False:
+                            print("\nGenero no registrado en base de datos.")
+                            continue
+                        else: 
+                            break
 
-        genero = input(f"Ingrese el género al que pertenece '{titulo}': ")
-        if genero.strip() == '':
-            print("El género del libro es un campo obligatorio.")
-            continue
-        elif genero not in generos:
-            print("El género no está registrado. Por favor, elija uno de los géneros existentes.")
-            continue
+                    while True:
+                        publicacion=input(f"Ingrese el año de publicación del libro {titulo} (YYYY) ")
+                        if (not bool(re.match("^[0-9]{4}$", publicacion))):
+                            print("\nEl año de publicación del libro solo pueden ser 4 caracteres númericos.")
+                            continue
+                        fecha_procesada = datetime.datetime.strptime(publicacion, "%Y").date() 
+                        fecha_actual = datetime.date.today()
+                        #print(fecha_procesada,type(fecha_procesada))
+                        if fecha_procesada > fecha_actual:
+                            print("Esta fecha no es valida")
+                        else:
+                            break
 
-        while True:
-            publicacion = input(f"Ingrese el año de publicación del libro '{titulo}' (YYYY): ")
-            if not bool(re.match("^[0-9]{4}$", publicacion)):
-                print("\nEl año de publicación del libro debe tener 4 caracteres numéricos.")
-                continue
-            anio_actual = datetime.datetime.now().year
-            if int(publicacion) > anio_actual:
-                print("El año de publicación no puede ser mayor al año actual.")
-                continue
-            break
+                    while True:
+                        fecha_adquisicion=input("Ingrese la fecha en la que se adquirio el libro (aaaa/mm/dd) ")
+                        if (not bool(re.match("^([0-9]{4}[/]?((0[13-9]|1[012])[/]?(0[1-9]|[12][0-9]|30)|(0[13578]|1[02])[/]?31|02[/]?(0[1-9]|1[0-9]|2[0-8]))|([0-9]{2}(([2468][048]|[02468][48])|[13579][26])|([13579][26]|[02468][048])00)[/]?02[/]?29)$",fecha_adquisicion))):
+                            print("\nLa fecha sigue los formatos aaaa/mm/dd y solo acepta dias posibles.")
+                            continue
+                        fecha2_procesada= datetime.datetime.strptime(fecha_adquisicion, "%Y/%m/%d").date() 
+                        if fecha2_procesada < fecha_procesada :
+                            print("La fecha de adquisicion debe ser despues de la fecha de publicacion, ingrese una fecha valida ")
+                        else:
+                            break
 
-        while True:
-            fecha_adquisicion = input("Ingrese la fecha en la que se adquirió el libro (aaaa/mm/dd): ")
-            try:
-                fecha_adquisicion = datetime.datetime.strptime(fecha_adquisicion, "%Y/%m/%d").date()
-                dia = fecha_adquisicion.day
-                mes = fecha_adquisicion.month
-                anio = fecha_adquisicion.year
+                    while True:
+                        isbn=input(str(f"Ingresa la clave de ISBN del libro "))
+                        if len(isbn) == 13 and (bool(re.match("^[0-9]{13}$", isbn))):
+                            break
+                        else:
+                            print("El ISBN debe tener 13 caracteres numericos, vuelva a ingresarlos ")
 
-                anio_actual = datetime.datetime.now().year
-                if anio > anio_actual:
-                    print("El año de adquisición no puede ser mayor al año actual.")
+                    while True:
+                            DatosCorrect=True
+                            print("*" * 40)
+                            print(f"Titulo: {titulo} \nAutor: {autor} \nGenero: {genero} \nFecha de publicacion: {publicacion} \nFecha de adquisición: {fecha_adquisicion} \nISBN: {isbn} \n") 
+                            print("*" * 40)
+                            confirmacion=input("¿Son correctos los datos ingresados? (SI/NO)").upper()
+                            print("*" * 40)
+                            if confirmacion=="SI":
+                                print("*" * 40)
+                                GuardarLibros(titulo,Obt_CL_Aut(autor),Obt_CL_Gen(genero),int(publicacion),isbn,int(fecha_adquisicion[8:10]),int(fecha_adquisicion[5:7]),int(fecha_adquisicion[:4]))
+                                print(f"Se registro el libro\n")
+                                print("*" * 40)
+                                break
+                            elif confirmacion=="NO": 
+                                DatosCorrect=False
+                                print("Vuelva a ingresar los datos")
+                                break
+                            else:
+                                print("Introduce una de las opciones (Si/NO)")
+                    if DatosCorrect==False:
+                        continue   
+
+                    break
+            seleccion=False
+            while True:
+                nuevo_registro=input("¿Deseas realizar un nuevo registro? (SI/NO)").upper()
+                if nuevo_registro=="SI":
+                    seleccion=True
+                    break 
+                elif nuevo_registro=="NO":
+                    print("*" * 40)
+                    print("Sus registros han quedado guardados")
+                    break
+                else:
+                    print("Favor de seleccionar una opcion valida.")
                     continue
-
-                if len(str(anio)) != 4:
-                    print("El año de adquisición debe tener 4 dígitos.")
-                    continue
-
+            if seleccion==True:
+                continue
+            else:
                 break
-            except ValueError:
-                print("La fecha ingresada no es válida. Por favor, ingrese una fecha en el formato correcto (aaaa/mm/dd).")
-                continue
-
-        while True:
-              isbn = input(f"Ingrese la clave de ISBN del libro '{titulo}': ")
-              if len(isbn) == 13 and bool(re.match("^[0-9]{13}$", isbn)):
-                  break
-              else:
-                  print("El ISBN debe tener 13 caracteres numéricos. Vuelva a ingresarlo.")
 
 def consultas():
     while True:
@@ -308,26 +306,27 @@ def ExportArchGenero_csv(generosearch):
     for clave,datos in listareport:
         if datos[2]==generosearch:
             grabador1.writerows([(clave,datos[0],datos[1],datos[2],datos[3],datos[4],datos[5])])
-    archivo4.close()
+    archivo4.close
     ruta = os.getcwd()
     print("El archivo generado tiene por nombre ",nombrarch," y esta en la ruta ",ruta)
 
 
 def ExportArchAñoPublic_csv(añosearch):
-    listareport = list(registro_libro.items())
+    listareport=list(registro_libro.items())
     nombrarch = "ReporteAñoPublicacion" + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")) + ".csv"
-    archivo4 = open(nombrarch, "w", newline="")
-    grabador1 = csv.writer(archivo4)
-    grabador1.writerow(("Clave", "Titulo", "Autor", "Genero", "f_publicacion", "fecha_adquisicion", "isbn"))
+    archivo4 = open(nombrarch,"w",newline="")
+    grabador1=csv.writer(archivo4)
+    grabador1.writerow(("Clave","Titulo","Autor","Genero","f_publicacion","fecha_adquisicion","isbn"))
     
     for clave, datos in listareport:
         año = datos[3].split("/")[-1]  
         if año == añosearch:
             grabador1.writerows([(clave, datos[0], datos[1], datos[2], datos[3], datos[4], datos[5])])
     
-    archivo4.close()
+
+    archivo4.close
     ruta = os.getcwd()
-    print("El archivo generado tiene por nombre ", nombrarch, " y esta en la ruta ", ruta)
+    print("El archivo generado tiene por nombre ",nombrarch," y esta en la ruta ",ruta)
 
 
 def ExportArchComplt_Excel():
@@ -442,7 +441,7 @@ def GuardarLibros(titulo,autor,genero,añopub,isbn,fechadqdia,fechadqmes,fechañ
     try:
         with sqlite3.connect("Biblioteca.db") as conn:
             mi_cursor=conn.cursor()
-            valores = (titulo,autor,genero,datetime.datetime(añopub,1,1),isbn,datetime.datetime(fechañodq,fechadqmes,fechadqdia))
+            valores = (titulo.upper(),autor,genero,datetime.datetime(añopub,1,1),isbn,datetime.datetime(fechañodq,fechadqmes,fechadqdia))
             mi_cursor.execute("INSERT INTO Libros (titulo,autor,genero,añopublicacion,ISBN,fechaadq) VALUES(?,?,?,?,?,?)", valores)
         print("Registros agregado exitosamente.")
     except Error as e:
@@ -456,7 +455,7 @@ def GuardarAutores(nombre,apellidos):
     try:
         with sqlite3.connect("Biblioteca.db") as conn:
             mi_cursor=conn.cursor()
-            valores = (nombre,apellidos)
+            valores = (nombre.upper(),apellidos.upper())
             mi_cursor.execute("INSERT INTO autores (AutNombre,AutApellidos) VALUES(?,?)", valores)
         print("Autor agregado exitosamente.")
     except Error as e:
@@ -470,7 +469,7 @@ def GuardarGeneros(genero):
     try:
         with sqlite3.connect("Biblioteca.db") as conn:
             mi_cursor=conn.cursor()
-            valores = (genero)
+            valores = (genero.upper(),)
             mi_cursor.execute("INSERT INTO generos (GenNombre) VALUES(?)", valores)
         print("Genero agregado exitosamente.")
     except Error as e:
@@ -503,8 +502,12 @@ def registro_autores():
                 continue
             else: 
                 break
-
-        GuardarAutores(autor,apellidos)
+        nomautor=autor+apellidos
+        if ChecarAut(nomautor):
+            print("Este Autor ya fue registrado previamente...")
+            continue
+        else:
+            GuardarAutores(autor,apellidos)
         while True:
             salida=input("Introduzca 1 para registrar otro autor\nIntroduzca 2 para salir de la seccion de registro de autores")
             if salida=="1":
@@ -527,6 +530,9 @@ def registro_generos():
                 print("Favor de no dejar el espacio vacio.")
             elif (not bool(re.match("^[A-Za-z ñáéíóúüÑÁÉÍÓÚÜ]{1,100}$",genero))):
                 print("\nEl nombre del genero solo puede contener 100 caracteres como máximo entre letras y espacios.")
+                continue
+            elif ChecarGen(genero):
+                print("Este genero ya fue registrado previamente...")
                 continue
             else: 
                 break
@@ -626,20 +632,22 @@ def ConsultaLibro_TAG(titulo,autor,genero):
                         print(f"{titulos:^16}")
         #Si no hay registros en la respuesta
             else:
-                print("No hay libros registrados.")
+                if titulo==1:
+                    print("No hay libros registrados.")
 
             mi_cursor.execute("SELECT * FROM autores ORDER BY clave")
             registros = mi_cursor.fetchall()
         #Procedemos a evaluar si hay registros en la respuesta
             if registros:
                 if autor==1:
-                    print("nombre\tapellidos")
+                    print("nombre\t\tapellidos")
                     print("*" * 30)
                     for claves, nombreaut,apellaut in registros:
                         print(f"{nombreaut:^16}\t{apellaut}")
         #Si no hay registros en la respuesta
             else:
-                print("No hay libros registrados.")
+                if autor==1:
+                    print("No hay libros registrados.")
             
             mi_cursor.execute("SELECT * FROM generos ORDER BY clave")
             registros = mi_cursor.fetchall()
@@ -652,6 +660,30 @@ def ConsultaLibro_TAG(titulo,autor,genero):
                         print(f"{generonom:^16}")
         #Si no hay registros en la respuesta
             else:
+                if genero==1:
+                    print("No hay libros registrados.")
+    except Error as e:
+        print (e)
+    except Exception:
+        print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+    finally:
+        conn.close()
+
+def ChecarAut(autnom):
+    found=False
+    try:
+        with sqlite3.connect("Biblioteca.db") as conn:
+            mi_cursor = conn.cursor()
+            mi_cursor.execute("SELECT * FROM autores ORDER BY clave")
+            registros = mi_cursor.fetchall()
+        #Procedemos a evaluar si hay registros en la respuesta
+            if registros:
+                for claves, nombreaut,apellaut in registros:
+                    nombrecomp=nombreaut+" "+apellaut
+                    if nombrecomp==autnom.upper():
+                        found=True
+        #Si no hay registros en la respuesta
+            else:
                 print("No hay libros registrados.")
     except Error as e:
         print (e)
@@ -659,15 +691,85 @@ def ConsultaLibro_TAG(titulo,autor,genero):
         print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
     finally:
         conn.close()
+        return found
     
+def ChecarGen(genname):
+    found=False
+    try:
+        with sqlite3.connect("Biblioteca.db") as conn:
+            mi_cursor = conn.cursor()
+            mi_cursor.execute("SELECT * FROM generos ORDER BY clave")
+            registros = mi_cursor.fetchall()
+        #Procedemos a evaluar si hay registros en la respuesta
+            if registros:
+                for claves, nombregen in registros:
+                    if nombregen==genname.upper():
+                        found=True
+        #Si no hay registros en la respuesta
+            else:
+                print("No hay libros registrados.")
+    except Error as e:
+        print (e)
+    except Exception:
+        print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+    finally:
+        conn.close()
+        return found
+
+def Obt_CL_Aut(nomsearch):
+    recover=""
+    try:
+        with sqlite3.connect("Biblioteca.db") as conn:
+            mi_cursor = conn.cursor()
+            mi_cursor.execute("SELECT * FROM autores ORDER BY clave")
+            registros = mi_cursor.fetchall()
+        #Procedemos a evaluar si hay registros en la respuesta
+            if registros:
+                for claves, nombreaut,apellaut in registros:
+                    nombrecomp=nombreaut+" "+apellaut
+                    if nombrecomp==nomsearch.upper():
+                        recover=claves
+        #Si no hay registros en la respuesta
+            else:
+                print("No hay libros registrados.")
+    except Error as e:
+        print (e)
+    except Exception:
+        print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+    finally:
+        conn.close()
+        return recover
+    
+def Obt_CL_Gen(gensearch):
+    recover=""
+    try:
+        with sqlite3.connect("Biblioteca.db") as conn:
+            mi_cursor = conn.cursor()
+            mi_cursor.execute("SELECT * FROM generos ORDER BY clave")
+            registros = mi_cursor.fetchall()
+        #Procedemos a evaluar si hay registros en la respuesta
+            if registros:
+                for claves, nombregen in registros:
+                    if nombregen==gensearch.upper():
+                        recover=claves
+        #Si no hay registros en la respuesta
+            else:
+                print("No hay libros registrados.")
+    except Error as e:
+        print (e)
+    except Exception:
+        print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
+    finally:
+        conn.close()
+        return recover   
 
 CrearTablas()
 while True:
     if start==False:
         registro_libro={}
         start=True
-    menu_principal=input("Bienvenido a la biblioteca universitaria\n ¿Que accion deseas realizar? \n[1]Registrar un nuevo ejemplar \n[2]Consultas y reportes \n\
-                         [3]Registrar un genero\n[4]Registrar un autor\n[5]Salir")
+    menu_principal=input("Bienvenido a la biblioteca universitaria\n ¿Que accion deseas realizar? \n[1]Registrar un nuevo ejemplar \n[2]Consultas y reportes \
+                         \n[3]Registrar un genero\n[4]Registrar un autor\n[5]Salir")
     if menu_principal== "1":
         if HayAutores()==False and HayGeneros()==False:
             print("No hay autores, ni generos registrados por lo que no se pueden registrar libros.\nVolviendo a menu principal....")
