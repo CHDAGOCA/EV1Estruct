@@ -407,7 +407,7 @@ def consultas():
                                             FROM Libros \
                                             JOIN autores ON Libros.autor = autores.clave \
                                             JOIN generos ON Libros.genero = generos.clave \
-                                            WHERE Libros.añopublicacion = :fecha"
+                                            WHERE DATE(Libros.añopublicacion) = :fecha"
 
                                     mi_cursor.execute(datos, valores)
                                     registros2 = mi_cursor.fetchall()
