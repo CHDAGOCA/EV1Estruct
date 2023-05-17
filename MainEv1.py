@@ -16,7 +16,7 @@ def registro():
     while True:
             while True:
                     while True: 
-                        titulo=input("Ingresa el titulo del libro a registrar ")
+                        titulo=input("Ingresa el titulo del libro a registrar: ")
                         if titulo.strip() == '': 
                             print("El titulo es un campo obligatorio ")
                         else: 
@@ -24,7 +24,7 @@ def registro():
                             
                     while True:
                         ConsultaLibro_TAG(0,1,0)
-                        autor=input(f"Ingrese el autor de {titulo} ")
+                        autor=input(f"Ingrese el autor de: {titulo} ")
                         if autor.strip() == '':
                             print("El autor del libro es un campo obligatorio")
                         elif ChecarAut(autor)==False:
@@ -35,7 +35,7 @@ def registro():
 
                     while True:
                         ConsultaLibro_TAG(0,0,1)
-                        genero=input(f"Ingrese el genero al que pertenece ")
+                        genero=input(f"Ingrese el genero al que pertenece: ")
                         if genero.strip() == '':
                             print("El genero del libro es un campo obligatorio")
                         elif ChecarGen(genero)==False:
@@ -45,7 +45,7 @@ def registro():
                             break
 
                     while True:
-                        publicacion=input(f"Ingrese el año de publicación del libro {titulo} (YYYY) ")
+                        publicacion=input(f"Ingrese el año de publicación del libro: {titulo} (YYYY)\n ")
                         if (not bool(re.match("^[0-9]{4}$", publicacion))):
                             print("\nEl año de publicación del libro solo pueden ser 4 caracteres númericos.")
                             continue
@@ -80,7 +80,7 @@ def registro():
                             print("*" * 40)
                             print(f"Titulo: {titulo} \nAutor: {autor} \nGenero: {genero} \nFecha de publicacion: {publicacion} \nFecha de adquisición: {fecha_adquisicion} \nISBN: {isbn} \n") 
                             print("*" * 40)
-                            confirmacion=input("¿Son correctos los datos ingresados? (SI/NO)").upper()
+                            confirmacion=input("¿Son correctos los datos ingresados? (SI/NO)\n ").upper()
                             print("*" * 40)
                             if confirmacion=="SI":
                                 print("*" * 40)
@@ -93,14 +93,14 @@ def registro():
                                 print("Vuelva a ingresar los datos")
                                 break
                             else:
-                                print("Introduce una de las opciones (Si/NO)")
+                                print("Introduce una de las opciones (SI/NO)\n ")
                     if DatosCorrect==False:
                         continue   
 
                     break
             seleccion=False
             while True:
-                nuevo_registro=input("¿Deseas realizar un nuevo registro? (SI/NO)").upper()
+                nuevo_registro=input("¿Deseas realizar un nuevo registro? (SI/NO)\n ").upper()
                 if nuevo_registro=="SI":
                     seleccion=True
                     break 
@@ -119,14 +119,17 @@ def registro():
 def consultas():
     while True:
         try:
-            sub_menu=input("Consultas y Reportajes\n ¿Que accion deseas realizar? \n[1] Consulta por titulo \n[2] Reportajes \n[3] Volver al menú Principal \n")
+            print("Consultas y Reportes")
+            print("[1] - Consulta por titulo \n[2] - Reportes \n[3] - Volver al menú Principal \n")
+            sub_menu=input("¿Que accion deseas realizar?\n ")
         
             if sub_menu == "3":
                 break
             if sub_menu == "1":
                 while True:
-                    consulta = input("Consulta de Título \n ¿Qué acción deseas realizar? \n[1] Por Título \n[2] Por ISBN \n[3]Volver al menú de consultas y reportajes \n ")
-
+                    print("Consulta de Título")
+                    print("[1] - Por Título \n[2] - Por ISBN \n[3] - Volver al menú de consultas y reportes ")
+                    consulta = input("¿Qué acción deseas realizar?\n ")
                     if consulta == "3":
                         break
                     if consulta == "1":#Por Titulo
@@ -191,7 +194,7 @@ def consultas():
                                     print("*" * 35)
 
                                 while True:
-                                    buscar_isbn=input(str(f"Ingresa la clave de ISBN del libro "))
+                                    buscar_isbn=input(str(f"Ingresa la clave de ISBN del libro\n "))
                                     if len(buscar_isbn) == 13 and (bool(re.match("^[0-9]{13}$", buscar_isbn))):
                                         break
                                     else:
@@ -229,7 +232,9 @@ def consultas():
                             
             if sub_menu == "2":
                 while True:
-                    opcion = input("Reportaje \n ¿Qué acción deseas realizar? \n[1] Catalogo completo \n[2] Reporte por Autor \n[3]Reporte por Genero \n[4]Reporte por Año de publicacion\n [5]Volver al menu de reportes")
+                    print("REPORTES")
+                    print("[1] - Catalogo completo \n[2] - Reporte por Autor \n[3] - Reporte por Genero \n[4] - Reporte por Año de publicación\n [5] - Volver al menu de reportes")
+                    opcion = input("¿Qué acción deseas realizar? \n ")
                     if opcion == "1":
                             try:
                                 with sqlite3.connect("Biblioteca.db") as conn:
@@ -247,14 +252,15 @@ def consultas():
 
                                     if registros2:
                                         print("**********Resultados de la búsqueda*********")
-                                        print("Titulo/Nombre del autor/Apellido del autor/Genero/Año de publicacion/ISBN/Fecha de Adquisicion")
+                                        print("Titulo  -  Nombre del autor  -  Apellido del autor  -  Genero  -  Año de publicacion  -   ISBN   -   Fecha de Adquisicion")
                                         for fila in registros2:
                                             print(f"{fila[1]} || {fila[2]} {fila[3]} || {fila[4]} || {fila[5]} || {fila[6]} || {fila[7]} ")
                                     else:
                                         print("No se encontró el libro")
 
                                     while True:
-                                        exportarP = input("Desea Exportarlo \n[1]Exportar a CSV \n[2]Exportar a msExcel \n[3]No exportar Reporte")
+                                        print("Formas de exportación\n[1] - Exportar a CSV \n[2] - Exportar a msExcel \n[3] - No exportar Reporte")
+                                        exportarP = input("¿Que desea hacer? \n")
                                         if exportarP=="1":
                                             GenArch_CatComp_CSV()
                                             continue
@@ -285,7 +291,7 @@ def consultas():
                                             print(clave,autnombre,autapellidos)
                                         print("*" * 35)
                                     while True:
-                                        buscar_autor=input(f"Ingrese el nombre completo del autor ")
+                                        buscar_autor=input(f"Ingrese el nombre completo del autor: ")
                                         if buscar_autor.strip() == '':
                                             print("El autor del libro es un campo obligatorio")
                                         elif ChecarAut(buscar_autor)==False:
@@ -314,8 +320,8 @@ def consultas():
                                         print("No se encontró el libro")
                                     
                                     while True:
-                                        exportarP = input("Desea Exportarlo \n[1]Exportar a CSV \n[2]Exportar a msExcel \n[3]No exportar Reporte")
-
+                                        print("Formas de exportación\n[1] - Exportar a CSV \n[2] - Exportar a msExcel \n[3] - No exportar Reporte")
+                                        exportarP = input("¿Que desea hacer? \n")
                                         if exportarP=="1":
                                             GenArch_CatAut_CSV(buscar_autor)
                                         elif exportarP=="2":
@@ -345,7 +351,7 @@ def consultas():
                                         print("*" * 35)
 
                                     while True:
-                                        buscar_autor=input(f"Ingrese el genero al que pertenece ")
+                                        buscar_autor=input(f"Ingrese el genero al que pertenece: ")
                                         if buscar_autor.strip() == '':
                                             print("El genero del libro es un campo obligatorio")
                                         elif ChecarGen(buscar_autor)==False:
@@ -366,15 +372,15 @@ def consultas():
 
                                     if registros3:
                                         print("**********Resultados de la búsqueda*********")
-                                        print("Clave/Titulo/Nombre del autor/Apellido del autor/Fecha de publicacion")
+                                        print("Clave --- Titulo   ---   Nombre del autor   ---   Apellido del autor   ---   Fecha de publicacion")
                                         for fila in registros3:
                                             print(f"{fila[0]} {fila[1]} {fila[2]} {fila[3]} {fila[4]}")
                                     else:
                                         print("No se encontró el libro")
 
                                     while True:
-                                        exportarP = input("Desea Exportarlo \n[1]Exportar a CSV \n[2]Exportar a msExcel \n[3]No exportar Reporte")
-
+                                        print("Formas de exportación\n[1] - Exportar a CSV \n[2] - Exportar a msExcel \n[3] - No exportar Reporte")
+                                        exportarP = input("¿Que desea hacer? \n")
                                         if exportarP=="1":
                                             GenArch_CatGen_CSV(buscar_autor)
                                         elif exportarP=="2":
@@ -394,7 +400,7 @@ def consultas():
                                 with sqlite3.connect("Biblioteca.db") as conn:
                                     mi_cursor = conn.cursor()
                                     while True:
-                                        buscar_fecha=input(f"Ingrese el año de publicación del libro (YYYY) ")
+                                        buscar_fecha=input(f"Ingrese el año de publicación del libro (YYYY): ")
                                         if (not bool(re.match("^[0-9]{4}$", buscar_fecha))):
                                             print("\nEl año de publicación del libro solo pueden ser 4 caracteres númericos.")
                                             continue
@@ -414,15 +420,15 @@ def consultas():
 
                                     if registros2:
                                         print("**********Resultados de la búsqueda*********")
-                                        print("Titulo/Nombre del autor/Apellido del autor/Genero/Año de publicacion/ISBN")
+                                        print("Titulo   ---   Nombre del autor   ---   Apellido del autor   ---   Genero  ---  Año de publicacion   ---   ISBN")
                                         for fila in registros2:
                                             print(f"{fila[1]} {fila[2]} {fila[3]} {fila[4]} {fila[5]} {fila[6]}")
                                     else:
                                         print("No se encontró el libro")
 
                                     while True:
-                                        exportarP = input("Desea Exportarlo \n[1]Exportar a CSV \n[2]Exportar a msExcel \n[3]No exportar Reporte")
-
+                                        print("Formas de exportación\n[1] - Exportar a CSV \n[2] - Exportar a msExcel \n[3] - No exportar Reporte")
+                                        exportarP = input("¿Que desea hacer? \n")
                                         if exportarP=="1":
                                             GenArch_CatPubYear_CSV(fechaprocesada)
                                         elif exportarP=="2":
@@ -712,7 +718,7 @@ def registro_autores():
         autor=""
         apellidos=""
         while True:
-            autor=input(f"Favor de ingresar el nombre del autor a registrar ")
+            autor=input(f"Favor de ingresar el nombre del autor a registrar: ")
             if autor.strip() == '':
                 print("Favor de no dejar el espacio vacio.")
             elif (not bool(re.match("^[A-Za-z ñáéíóúüÑÁÉÍÓÚÜ]{1,100}$",autor))):
@@ -721,7 +727,7 @@ def registro_autores():
             else: 
                 break
         while True:
-            apellidos=input(f"Favor de ingresar los apellidos del autor a registrar ")
+            apellidos=input(f"Favor de ingresar los apellidos del autor a registrar: ")
             if apellidos.strip() == '':
                 print("Favor de no dejar el espacio vacio.")
             elif (not bool(re.match("^[A-Za-z ñáéíóúüÑÁÉÍÓÚÜ]{1,100}$",apellidos))):
@@ -736,7 +742,8 @@ def registro_autores():
         else:
             GuardarAutores(autor,apellidos)
         while True:
-            salida=input("Introduzca 1 para registrar otro autor\nIntroduzca 2 para salir de la seccion de registro de autores")
+            print("Introduzca 1 para registrar otro autor\nIntroduzca 2 para salir de la seccion de registro de autores ")
+            salida=input("Por favor elija una opción: ")
             if salida=="1":
                 out=False
                 break
@@ -752,7 +759,7 @@ def registro_generos():
     while True:
         out=False
         while True:
-            genero=input(f"Favor de ingresar el genero a registrar ")
+            genero=input(f"Favor de ingresar el genero a registrar: ")
             if genero.strip() == '':
                 print("Favor de no dejar el espacio vacio.")
             elif (not bool(re.match("^[A-Za-z ñáéíóúüÑÁÉÍÓÚÜ]{1,100}$",genero))):
@@ -766,7 +773,8 @@ def registro_generos():
             
         GuardarGeneros(genero)
         while True:
-            salida=input("Introduzca 1 para registrar otro genero\nIntroduzca 2 para salir de la seccion de registro de generos")
+            print("Introduzca 1 para registrar otro autor\nIntroduzca 2 para salir de la seccion de registro de autores ")
+            salida=input("Por favor elija una opción: ")
             if salida=="1":
                 out=False
                 break
@@ -1037,7 +1045,7 @@ def GenArch_CatAut_CSV(search):
         conn.close()
 
 def GenArch_CatPubYear_CSV(search):
-    nombrarch = "ReporteAñodePublicacion" + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")) + ".csv"
+    nombrarch = ("ReporteAñodePublicacion" + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")) + ".csv")
     archivo4 = open(nombrarch,"w",newline="")
     grabador1=csv.writer(archivo4)
     grabador1.writerow(("Clave","Titulo","Autor","Genero","f_publicacion","fecha_adquisicion","isbn"))
@@ -1421,8 +1429,10 @@ while True:
     if start==False:
         registro_libro={}
         start=True
-    menu_principal=input("Bienvenido a la biblioteca universitaria\n ¿Que accion deseas realizar? \n[1]Registrar un nuevo ejemplar \n[2]Consultas y reportes \
-                         \n[3]Registrar un genero\n[4]Registrar un autor\n[5]Salir")
+    print("Bienvenido a la biblioteca universitaria")
+    print("[1] - Registrar un nuevo ejemplar \n[2] - Consultas y reportes \
+          \n[3] - Registrar un genero\n[4] - Registrar un autor\n[5] - Salir")
+    menu_principal=input("¿Que accion deseas realizar?\n ")
     if menu_principal== "1":
         if HayAutores()==False and HayGeneros()==False:
             print("No hay autores, ni generos registrados por lo que no se pueden registrar libros.\nVolviendo a menu principal....")
