@@ -7,7 +7,6 @@ import sqlite3
 import sys
 import os.path
 from sqlite3 import Error
-start=False
 
 def registro():
     print("-" * 40)
@@ -16,7 +15,7 @@ def registro():
     while True:
             while True:
                     while True: 
-                        titulo=input("Ingresa el titulo del libro a registrar: ")
+                        titulo=input("Ingresa el titulo del libro a registrar: \n")
                         if titulo.strip() == '': 
                             print("El titulo es un campo obligatorio ")
                         else: 
@@ -24,7 +23,7 @@ def registro():
                             
                     while True:
                         ConsultaLibro_TAG(0,1,0)
-                        autor=input(f"Ingrese el autor de: {titulo} ")
+                        autor=input(f"Ingrese el autor de: {titulo} \n")
                         if autor.strip() == '':
                             print("El autor del libro es un campo obligatorio")
                         elif ChecarAut(autor)==False:
@@ -35,7 +34,7 @@ def registro():
 
                     while True:
                         ConsultaLibro_TAG(0,0,1)
-                        genero=input(f"Ingrese el genero al que pertenece: ")
+                        genero=input(f"Ingrese el genero al que pertenece: \n")
                         if genero.strip() == '':
                             print("El genero del libro es un campo obligatorio")
                         elif ChecarGen(genero)==False:
@@ -58,7 +57,8 @@ def registro():
                             break
 
                     while True:
-                        fecha_adquisicion=input("Ingrese la fecha en la que se adquirio el libro (aaaa/mm/dd) ")
+                        fechadq_captura=input("Ingrese la fecha en la que se adquirio el libro [dd/mm/aaaa] \n")
+                        fecha_adquisicion=fechadq_captura[6:10]+"/"+fechadq_captura[3:5]+"/"+fechadq_captura[:2]
                         if (not bool(re.match("^([0-9]{4}[/]?((0[13-9]|1[012])[/]?(0[1-9]|[12][0-9]|30)|(0[13578]|1[02])[/]?31|02[/]?(0[1-9]|1[0-9]|2[0-8]))|([0-9]{2}(([2468][048]|[02468][48])|[13579][26])|([13579][26]|[02468][048])00)[/]?02[/]?29)$",fecha_adquisicion))):
                             print("\nLa fecha sigue los formatos aaaa/mm/dd y solo acepta dias posibles.")
                             continue
@@ -69,7 +69,7 @@ def registro():
                             break
 
                     while True:
-                        isbn=input(str(f"Ingresa la clave de ISBN del libro "))
+                        isbn=input(str(f"Ingresa la clave de ISBN del libro \n"))
                         if len(isbn) == 13 and (bool(re.match("^[0-9]{13}$", isbn))):
                             break
                         else:
@@ -146,7 +146,7 @@ def consultas():
                                         print(titulo[0])
                                     print("*" * 35)
 
-                                buscar_titulo = input("¿Qué título quieres consultar? ").upper()
+                                buscar_titulo = input("¿Qué título quieres consultar? \n").upper()
                                 valores = {"titulo": buscar_titulo}
 
                                 datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, generos.GenNombre, Libros.añopublicacion, Libros.ISBN, Libros.Fechaadq \
@@ -291,7 +291,7 @@ def consultas():
                                             print(clave,autnombre,autapellidos)
                                         print("*" * 35)
                                     while True:
-                                        buscar_autor=input(f"Ingrese el nombre completo del autor: ")
+                                        buscar_autor=input(f"Ingrese el nombre completo del autor: \n")
                                         if buscar_autor.strip() == '':
                                             print("El autor del libro es un campo obligatorio")
                                         elif ChecarAut(buscar_autor)==False:
@@ -351,7 +351,7 @@ def consultas():
                                         print("*" * 35)
 
                                     while True:
-                                        buscar_autor=input(f"Ingrese el genero al que pertenece: ")
+                                        buscar_autor=input(f"Ingrese el genero al que pertenece: \n")
                                         if buscar_autor.strip() == '':
                                             print("El genero del libro es un campo obligatorio")
                                         elif ChecarGen(buscar_autor)==False:
@@ -400,7 +400,7 @@ def consultas():
                                 with sqlite3.connect("Biblioteca.db") as conn:
                                     mi_cursor = conn.cursor()
                                     while True:
-                                        buscar_fecha=input(f"Ingrese el año de publicación del libro (YYYY): ")
+                                        buscar_fecha=input(f"Ingrese el año de publicación del libro (YYYY): \n")
                                         if (not bool(re.match("^[0-9]{4}$", buscar_fecha))):
                                             print("\nEl año de publicación del libro solo pueden ser 4 caracteres númericos.")
                                             continue
@@ -478,28 +478,6 @@ def CrearTablas():
                 conn.close()
     else:
         print("Archivo db existente.")
-
-#    try:
-        #registro_libro=dict()
-        #with open("Registro.csv","r",newline="") as archivo:
-            #lector=csv.reader(archivo)
-            #next(lector)
-
-            #for clave, titulo,autor,genero,f_publicacion,fecha_adq,isbn in lector:
-                #registro_libro[int(clave)]=(titulo,autor,genero,f_publicacion,fecha_adq,isbn)
-        #return registro_libro
-#    except FileNotFoundError:
-        #print("No hay registros previos en la bilbioteca")
-        #registro_libro=dict()
-        #return registro_libro
-#    except csv.Error as fallocsv:
-        #print("Ocurrió un error inesperado y no se cargaron los registros")
-        #registro_libro=dict()
-        #return registro_libro
-#    except Exception:
-        #print("Deido a un error no se han podido cargar los registros.")
-        #registro_libro=dict()
-        #return registro_libro
 
 def ExportArchComplt_csv():
     listareport=list(registro_libro.items())
@@ -610,38 +588,6 @@ def ExportArchAutores_Excel(autorsearch):
     libro.save(archname)
     print("El reporte ", archname ," fue creado exitosamente y esta en ",ruta)
 
-# def ExportArchGenero_Excel(generosearch):
-#     listareport=list(registro_libro.items())
-#     ruta = os.getcwd()
-#     archname = "ReporteGenero" + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")) + ".xlsx"
-#     libro = openpyxl.Workbook()
-#     libro.iso_dates = True 
-#     hoja = libro["Sheet"] 
-#     hoja.title = "Reporte de Genero"
-#     hoja["B1"].value ="Folio"
-#     hoja["C1"].value ="Titulo"
-#     hoja["D1"].value ="Autor"
-#     hoja["E1"].value ="Genero"
-#     hoja["F1"].value ="Año de Publicación"
-#     hoja["G1"].value ="Fecha de Adquisición"
-#     hoja["H1"].value ="ISBN"
-#     for i, (clave, valor) in enumerate(listareport):
-#         if valor[2]==generosearch:
-#             hoja.cell(row=i+2, column=2).value = clave
-#             hoja.cell(row=i+2, column=3).value = valor[0]
-#             hoja.cell(row=i+2, column=4).value = valor[1]
-#             hoja.cell(row=i+2, column=5).value = valor[2]
-#             hoja.cell(row=i+2, column=6).value = valor[3]
-#             hoja.cell(row=i+2, column=7).value = valor[4]
-#             hoja.cell(row=i+2, column=8).value = valor[5]
-#     libro.save(archname)
-#     print("El reporte ", archname ," fue creado exitosamente y esta en ",ruta)
-
-
-
-
-
-
 def ExportArchAñoPublic_Excel(añosearch):
     listareport=list(registro_libro.items())
     ruta = os.getcwd()
@@ -718,7 +664,7 @@ def registro_autores():
         autor=""
         apellidos=""
         while True:
-            autor=input(f"Favor de ingresar el nombre del autor a registrar: ")
+            autor=input(f"Favor de ingresar el nombre del autor a registrar: \n")
             if autor.strip() == '':
                 print("Favor de no dejar el espacio vacio.")
             elif (not bool(re.match("^[A-Za-z ñáéíóúüÑÁÉÍÓÚÜ]{1,100}$",autor))):
@@ -727,7 +673,7 @@ def registro_autores():
             else: 
                 break
         while True:
-            apellidos=input(f"Favor de ingresar los apellidos del autor a registrar: ")
+            apellidos=input(f"Favor de ingresar los apellidos del autor a registrar: \n")
             if apellidos.strip() == '':
                 print("Favor de no dejar el espacio vacio.")
             elif (not bool(re.match("^[A-Za-z ñáéíóúüÑÁÉÍÓÚÜ]{1,100}$",apellidos))):
@@ -743,7 +689,7 @@ def registro_autores():
             GuardarAutores(autor,apellidos)
         while True:
             print("Introduzca 1 para registrar otro autor\nIntroduzca 2 para salir de la seccion de registro de autores ")
-            salida=input("Por favor elija una opción: ")
+            salida=input("Por favor elija una opción: \n")
             if salida=="1":
                 out=False
                 break
@@ -759,7 +705,7 @@ def registro_generos():
     while True:
         out=False
         while True:
-            genero=input(f"Favor de ingresar el genero a registrar: ")
+            genero=input(f"Favor de ingresar el genero a registrar: \n")
             if genero.strip() == '':
                 print("Favor de no dejar el espacio vacio.")
             elif (not bool(re.match("^[A-Za-z ñáéíóúüÑÁÉÍÓÚÜ]{1,100}$",genero))):
@@ -774,7 +720,7 @@ def registro_generos():
         GuardarGeneros(genero)
         while True:
             print("Introduzca 1 para registrar otro autor\nIntroduzca 2 para salir de la seccion de registro de autores ")
-            salida=input("Por favor elija una opción: ")
+            salida=input("Por favor elija una opción: \n")
             if salida=="1":
                 out=False
                 break
@@ -1007,8 +953,6 @@ def GenArch_CatAut_CSV(search):
         with sqlite3.connect("Biblioteca.db") as conn:
             mi_cursor = conn.cursor()
 
-            mi_cursor.execute("SELECT titulo FROM Libros")
-
             valores = {"titulo": search.upper()}
 
             datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, generos.GenNombre, Libros.añopublicacion, Libros.ISBN, Libros.Fechaadq \
@@ -1052,8 +996,6 @@ def GenArch_CatPubYear_CSV(search):
     try:
         with sqlite3.connect("Biblioteca.db") as conn:
             mi_cursor = conn.cursor()
-
-            mi_cursor.execute("SELECT titulo FROM Libros")
 
             valores = {"fecha": search}
 
@@ -1099,8 +1041,6 @@ def GenArch_CatGen_CSV(search):
         with sqlite3.connect("Biblioteca.db") as conn:
             mi_cursor = conn.cursor()
 
-            mi_cursor.execute("SELECT titulo FROM Libros")
-
             valores = {"titulo": search.upper()}
 
             datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, generos.GenNombre, Libros.añopublicacion, Libros.ISBN, Libros.Fechaadq \
@@ -1144,8 +1084,6 @@ def GenArch_CatComp_CSV():
     try:
         with sqlite3.connect("Biblioteca.db") as conn:
             mi_cursor = conn.cursor()
-
-            mi_cursor.execute("SELECT titulo FROM Libros")
 
             datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, generos.GenNombre, Libros.añopublicacion, Libros.ISBN, Libros.Fechaadq \
                     FROM Libros \
@@ -1196,8 +1134,6 @@ def GenArch_CatAut_Excel(search):
     try:
         with sqlite3.connect("Biblioteca.db") as conn:
             mi_cursor = conn.cursor()
-
-            mi_cursor.execute("SELECT titulo FROM Libros")
 
             valores = {"titulo": search.upper()}
 
@@ -1259,8 +1195,6 @@ def GenArch_CatGen_Excel(search):
         with sqlite3.connect("Biblioteca.db") as conn:
             mi_cursor = conn.cursor()
 
-            mi_cursor.execute("SELECT titulo FROM Libros")
-
             valores = {"titulo": search.upper()}
 
             datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, generos.GenNombre, Libros.añopublicacion, Libros.ISBN, Libros.Fechaadq \
@@ -1320,8 +1254,6 @@ def GenArch_CatPubYear_Excel(search):
     try:
         with sqlite3.connect("Biblioteca.db") as conn:
             mi_cursor = conn.cursor()
-
-            mi_cursor.execute("SELECT titulo FROM Libros")
 
             valores = {"fecha": search}
 
@@ -1383,8 +1315,6 @@ def GenArch_CatComp_Excel():
         with sqlite3.connect("Biblioteca.db") as conn:
             mi_cursor = conn.cursor()
 
-            mi_cursor.execute("SELECT titulo FROM Libros")
-
             datos = "SELECT Libros.clave, Libros.titulo, autores.AutNombre, autores.AutApellidos, generos.GenNombre, Libros.añopublicacion, Libros.ISBN, Libros.Fechaadq \
                     FROM Libros \
                     JOIN autores ON Libros.autor = autores.clave \
@@ -1426,9 +1356,6 @@ def GenArch_CatComp_Excel():
 
 CrearTablas()
 while True:
-    if start==False:
-        registro_libro={}
-        start=True
     print("Bienvenido a la biblioteca universitaria")
     print("[1] - Registrar un nuevo ejemplar \n[2] - Consultas y reportes \
           \n[3] - Registrar un genero\n[4] - Registrar un autor\n[5] - Salir")
