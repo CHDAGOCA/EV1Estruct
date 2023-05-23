@@ -233,7 +233,7 @@ def consultas():
             if sub_menu == "2":
                 while True:
                     print("REPORTES")
-                    print("[1] - Catalogo completo \n[2] - Reporte por Autor \n[3] - Reporte por Genero \n[4] - Reporte por Año de publicación\n [5] - Volver al menu de reportes")
+                    print("[1] - Catalogo completo \n[2] - Reporte por Autor \n[3] - Reporte por Genero \n[4] - Reporte por Año de publicación\n[5] - Volver al menu de reportes")
                     opcion = input("¿Qué acción deseas realizar? \n ")
                     if opcion == "1":
                             try:
@@ -449,15 +449,6 @@ def consultas():
         except Exception:
             print(f"Se produjo el siguiente error: {sys.exc_info()[0]}")
 
-
-def GuardarArchivo():
-    listareport=list(registro_libro.items())
-    archivo = open("Registro.csv","w",newline="")
-    grabador=csv.writer(archivo)
-    grabador.writerow(("Clave","Titulo","Autor","Genero","f_publicacion","fecha_adquisicion","isbn"))
-    grabador.writerows([(clave,datos[0],datos[1],datos[2],datos[3],datos[4],datos[5]) for clave,datos in listareport])
-    archivo.close
-
 def CrearTablas():
     file_exists = os.path.exists('Biblioteca.db')
     if not(file_exists):
@@ -479,6 +470,7 @@ def CrearTablas():
     else:
         print("Archivo db existente.")
 
+#Funciones no utilizadas en esta version:
 def ExportArchComplt_csv():
     listareport=list(registro_libro.items())
     nombrarch = "ReporteCompleto" + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")) + ".csv"
@@ -516,7 +508,6 @@ def ExportArchGenero_csv(generosearch):
     ruta = os.getcwd()
     print("El archivo generado tiene por nombre ",nombrarch," y esta en la ruta ",ruta)
 
-
 def ExportArchAñoPublic_csv(añosearch):
     listareport=list(registro_libro.items())
     nombrarch = "ReporteAñoPublicacion" + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")) + ".csv"
@@ -533,7 +524,6 @@ def ExportArchAñoPublic_csv(añosearch):
     archivo4.close
     ruta = os.getcwd()
     print("El archivo generado tiene por nombre ",nombrarch," y esta en la ruta ",ruta)
-
 
 def ExportArchComplt_Excel():
     listareport=list(registro_libro.items())
@@ -614,7 +604,6 @@ def ExportArchAñoPublic_Excel(añosearch):
             hoja.cell(row=i+2, column=8).value = valor[5]
     libro.save(archname)
     print("El reporte ", archname ," fue creado exitosamente y esta en ",ruta)
-
 
 def GuardarLibros(titulo,autor,genero,añopub,isbn,fechadqdia,fechadqmes,fechañodq):
     try:
